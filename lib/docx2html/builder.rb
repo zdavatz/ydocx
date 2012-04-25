@@ -5,13 +5,23 @@ require 'nokogiri'
 
 module Docx2html
   class Builder
-    attr_accessor :title
+    attr_accessor :title, :style
     def initialize(body)
       @title = ''
+      @style = false
       @body = body
       if block_given?
         yield self
       end
+    end
+    def style
+      style = <<-CSS
+table, tr, td {
+  border-collapse: collapse;
+  border:          1px solid gray;
+}
+      CSS
+      style
     end
     def build
       body = ''
@@ -24,6 +34,7 @@ module Docx2html
         doc.html {
           doc.head {
             doc.title @title
+            doc.style { doc << style } if @style
           }
           doc.body { doc << body }
         }
@@ -38,8 +49,6 @@ module Docx2html
           next if v.nil? or v.empty?
           if v.is_a? Hash
             _value << _build(v[:tag], v[:value])
-            if v[:tag] == :strong
-            end
           else
             _value << v.chomp.to_s
           end

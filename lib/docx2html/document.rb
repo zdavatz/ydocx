@@ -21,10 +21,11 @@ module Docx2html
       end
       @zip.close
     end
-    def to_html(file='')
+    def to_html(file='', options={})
       html = ''
       Builder.new(@contents) do |builder|
         builder.title = @path
+        builder.style = options[:style]
         html = builder.build
       end
       unless file.empty?

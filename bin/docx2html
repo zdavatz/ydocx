@@ -11,6 +11,6 @@ if file = ARGV.first
   unless File.exist?(file)
     exit
   else
-    Docx2html::Document.open(file).to_html file
+    Docx2html::Document.open(file).to_html file, :style => true
   end
 end
