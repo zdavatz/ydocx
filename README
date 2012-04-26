@@ -5,4 +5,4 @@ Parsing docx files with Ruby and output them as HTML.
 
 ## Using nokogiri
 
-## License GPLv2.1
+## License GPLv2.1, http://www.gnu.org/licenses/lgpl-2.1.html
