@@ -3,6 +3,16 @@ docx - © ywesee GmbH
 
 Parsing docx files with Ruby and output them as HTML.
 
-## Using nokogiri
+## Supports
 
-## License GPLv2.1, http://www.gnu.org/licenses/lgpl-2.1.html
+* Tables
+* Uppercase letters, numbers
+* Lowercase letters, numbers
+* Umlaute
+* bold, italic, underline
+
+## Using the great nokogiri library
+
+## License GPLv2.1
+
+* http://www.gnu.org/licenses/lgpl-2.1.html
