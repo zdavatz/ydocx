@@ -2,12 +2,13 @@
 # encoding: utf-8
 
 require 'nokogiri'
-#require 'cgi'
+require 'htmlentities'
 
 module Docx2html
   class Parser
     def initialize(stream)
-      @xml = Nokogiri::XML(stream)
+      @xml = Nokogiri::XML.parse(stream)
+      @coder = HTMLEntities.new
       if block_given?
         yield self
       end
@@ -39,21 +40,39 @@ module Docx2html
       }
       tag_hash
     end
-    def escape(text)
+    def optional_escape(text)
+      return text = '&nbsp;' if text.empty?
       text.force_encoding('utf-8')
-      #text = CGI.escapeHTML(text)
-      #FIXME
-      # CGI.escapeHTML breaks umlate
-      # support some characters only
-      text.gsub!(/(.+?)<(.+?)/, '\1&lt;\2')
-      text.gsub!(/(.+?)>(.+?)/, '\1&gt;\2')
-      text.gsub!(/≤/, '&le;')
-      text.gsub!(/≥/, '&ge;')
+      #NOTE
+      #  :named only for escape at Builder
+      text = @coder.encode(text, :named)
       text
+    end
+    def optional_replace(code)
+      #NOTE
+      #  replace with rsemble html character ref
+      #  Symbol Font to HTML Character ref
+      #p "code : " + ("&#x%s;" % code)
+      #p "hex  : " + code.hex.to_s
+      #p "char : " + @coder.decode("&#x%s;" % code)
+      case code
+      when 'f0b7'
+        "&sdot;"   # &#8901;
+      when 'f0b2'
+        "&le";     # &#8804;
+      when 'f0b3'
+        "&ge;"     # &#8805;
+      when 'f0b1'
+        "&plusmn;" # &#177;
+      when 'f06d'
+        "&mu;"     # &#956;
+      else
+        @coder.decode("&#%s;" % code.hex)
+      end
     end
     def parse_text(r)
       text = r.xpath('w:t').map(&:text).join('')
-      text = escape(text)
+      text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
         unless rpr.xpath('w:i').empty?
           text = tag(:em, text) 
@@ -70,13 +89,24 @@ module Docx2html
           end
         end
       end
-      text = ' ' if text.empty?
       text
     end
     def parse_paragraph(node)
       paragraph = tag :p
       node.xpath('w:r').each do |r|
-        paragraph[:content] << parse_text(r)
+        unless r.xpath('w:t').empty?
+          paragraph[:content] << parse_text(r)
+        else
+          unless r.xpath('w:tab').empty?
+            if paragraph[:content].last != '&nbsp;' # as a space
+              paragraph[:content] << optional_escape('')
+            end
+          end
+          unless r.xpath('w:sym').empty?
+            code = r.xpath('w:sym').first['char'].downcase # w:char
+            paragraph[:content] << optional_replace(code)
+          end
+        end
       end
       paragraph
     end
@@ -88,7 +118,7 @@ module Docx2html
           attributes = {}
           tc.xpath('w:tcPr').each do |tcpr|
             if span = tcpr.xpath('w:gridSpan') and !span.empty?
-              attributes[:colspan] = span.first['val'] # x w:val
+              attributes[:colspan] = span.first['val'] # w:val
             end
           end
           cell = tag :td, [], attributes

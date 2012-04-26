@@ -30,7 +30,7 @@ module Docx2html
       end
       unless file.empty?
         path = Pathname.new(file).realpath.sub_ext('.html')
-        File.open(path, 'w') do |f|
+        File.open(path, 'w:utf-8') do |f|
           f.puts html
         end
       else
