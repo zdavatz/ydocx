@@ -47,7 +47,16 @@ module Docx2html
         unless rpr.xpath('w:b').empty?
           text = tag(:strong, text)
         end
+        unless rpr.xpath('w:vertAlign').empty?
+          script = rpr.xpath('w:vertAlign').first['val'].to_sym
+          if script == :subscript
+            text = tag(:sub, text)
+          elsif script == :superscript
+            text = tag(:sup, text)
+          end
+        end
       end
+      text = ' ' if text.empty?
       text
     end
     def parse_paragraph(node)
