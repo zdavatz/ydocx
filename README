@@ -11,7 +11,10 @@ Parsing docx files with Ruby and output them as HTML.
 * Umlaute
 * bold, italic, underline
 
-## Using the great nokogiri library
+## Using the great libraries
+
+* nokogiri
+* htmlentities
 
 ## License GPLv2.1
 
