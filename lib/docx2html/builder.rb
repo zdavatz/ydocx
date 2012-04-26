@@ -63,11 +63,8 @@ table, tr, td {
   border-collapse: collapse;
   border:          1px solid gray;
 }
-table {
-  margin: 3px;
-}
 td {
-  padding: 3px 5px;
+  padding: 5px 10px;
 }
       CSS
       style
