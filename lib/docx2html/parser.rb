@@ -74,6 +74,9 @@ module Docx2html
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
+        unless rpr.xpath('w:u').empty?
+          text = tag(:span, text, {:style => "text-decoration:underline;"})
+        end
         unless rpr.xpath('w:i').empty?
           text = tag(:em, text) 
         end
