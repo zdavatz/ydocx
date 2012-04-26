@@ -49,25 +49,26 @@ module Docx2html
       text
     end
     def optional_replace(code)
+      code = "0x" + code
       #NOTE
       #  replace with rsemble html character ref
-      #  Symbol Font to HTML Character ref
-      #p "code : " + ("&#x%s;" % code)
-      #p "hex  : " + code.hex.to_s
-      #p "char : " + @coder.decode("&#x%s;" % code)
+      #  Symbol Font to HTML Character named ref
       case code
-      when 'f0b7'
-        "&sdot;"   # &#8901;
-      when 'f0b2'
-        "&le";     # &#8804;
-      when 'f0b3'
-        "&ge;"     # &#8805;
-      when 'f0b1'
-        "&plusmn;" # &#177;
-      when 'f06d'
-        "&mu;"     # &#956;
+      when '0xf0b7'
+        "&sdot;"
+      when '0xf0b2'
+        "&le";
+      when '0xf0b3'
+        "&ge;"
+      when '0xf0b1'
+        "&plusmn;"
+      when '0xf06d'
+        "&mu;"
       else
-        @coder.decode("&#%s;" % code.hex)
+        #p "code : " + ("&#%s;" % code)
+        #p "hex  : " + code.hex.to_s
+        #p "char : " + @coder.decode("&#%s;" % code)
+        @coder.decode("&#%s;" % code.hex.to_s)
       end
     end
     def parse_text(r)

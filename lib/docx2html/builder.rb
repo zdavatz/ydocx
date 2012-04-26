@@ -17,7 +17,7 @@ module Docx2html
     def build
       body = ''
       @body.each do |e|
-        body << _build(e[:tag], e[:content], e[:attributes]).to_s
+        body << _build(e[:tag], e[:content], e[:attributes])
       end
       builder = Nokogiri::HTML::Builder.new do |doc|
         doc.html {
