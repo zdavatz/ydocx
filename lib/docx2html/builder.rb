@@ -22,6 +22,7 @@ module Docx2html
       builder = Nokogiri::HTML::Builder.new do |doc|
         doc.html {
           doc.head {
+            doc.meta :charset => 'utf-8'
             doc.title @title
             doc.style { doc << style } if @style
           }

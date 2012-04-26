@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 require 'nokogiri'
+#require 'cgi'
 
 module Docx2html
   class Parser
@@ -38,8 +39,21 @@ module Docx2html
       }
       tag_hash
     end
+    def escape(text)
+      text.force_encoding('utf-8')
+      #text = CGI.escapeHTML(text)
+      #FIXME
+      # CGI.escapeHTML breaks umlate
+      # support some characters only
+      text.gsub!(/(.+?)<(.+?)/, '\1&lt;\2')
+      text.gsub!(/(.+?)>(.+?)/, '\1&gt;\2')
+      text.gsub!(/≤/, '&le;')
+      text.gsub!(/≥/, '&ge;')
+      text
+    end
     def parse_text(r)
       text = r.xpath('w:t').map(&:text).join('')
+      text = escape(text)
       if rpr = r.xpath('w:rPr')
         unless rpr.xpath('w:i').empty?
           text = tag(:em, text) 
