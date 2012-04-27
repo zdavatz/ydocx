@@ -49,21 +49,21 @@ module Docx2html
       text
     end
     def optional_replace(code)
-      code = "0x" + code
+      code = '0x' + code
       #NOTE
       #  replace with rsemble html character ref
       #  Symbol Font to HTML Character named ref
       case code
-      when '0xf0b7'
-        "&sdot;"
-      when '0xf0b2'
-        "&le";
-      when '0xf0b3'
-        "&ge;"
-      when '0xf0b1'
-        "&plusmn;"
-      when '0xf06d'
+      when '0xf06d' # '61549'
         "&mu;"
+      when '0xf0b1' # '61617'
+        "&plusmn;"
+      when '0xf0b2' # '61618'
+        "&le";
+      when '0xf0b3' # '61619'
+        "&ge;"
+      when '0xf0b7' # '61623'
+        "&sdot;"
       else
         #p "code : " + ("&#%s;" % code)
         #p "hex  : " + code.hex.to_s
@@ -75,6 +75,23 @@ module Docx2html
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
+        # ooffice compatibility
+        symbol = false
+        unless rpr.xpath('w:rFonts').empty?
+          rpr.xpath('w:rFonts').each do |font|
+            if font.values.include? 'Symbol'
+              symbol = true && break
+            end
+          end
+        end
+        if symbol
+          _text = ''
+          text.unpack('U*').each do |char|
+            _text << optional_replace(char.to_s(16))
+          end
+          text = _text
+        end
+        # inline tag
         unless rpr.xpath('w:u').empty?
           text = tag(:span, text, {:style => "text-decoration:underline;"})
         end
