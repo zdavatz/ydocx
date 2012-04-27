@@ -80,8 +80,9 @@ module Docx2html
         unless rpr.xpath('w:rFonts').empty?
           rpr.xpath('w:rFonts').each do |font|
             if font.values.include? 'Symbol'
-              symbol = true && break
+              symbol = true
             end
+            break if symbol
           end
         end
         if symbol
