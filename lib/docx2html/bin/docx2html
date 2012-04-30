@@ -4,22 +4,13 @@
 require 'pathname'
 
 root = Pathname.new(__FILE__).realpath.parent.parent
-%w(
-  lib/docx2html/lib
-  lib
-).each do |lib|
-  $:.unshift root.join(lib) if $0 == __FILE__
-end
+$:.unshift root.join('lib/docx2html') if $0 == __FILE__
 require 'docx2html'
 
 if file = ARGV.first
   unless File.exist?(file)
     exit
   else
-    # TODO args handling
-    if true
-      require 'fachinfo'
-    end
     Docx2html::Document.open(file).to_html file, :style => true
   end
 end

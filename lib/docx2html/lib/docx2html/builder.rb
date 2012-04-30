@@ -67,7 +67,7 @@ td {
   padding: 5px 10px;
 }
       CSS
-      style
+      style.gsub(/\s\s+|\n/, ' ')
     end
   end
 end
