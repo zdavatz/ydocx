@@ -11,40 +11,53 @@ module Docx2html
       @container = tag(:div, [], {:id => 'container'})
     end
     private
-    def build_block(text)
-      chapters = [
-        /^Auslieferung|R.partiteur/u,
-        /^Composition|^Principes\s*actifs/u,
-        /^Dosierung\/Anwendung/u,
-        /^Eigenschaften|^Propri.t.s/u,
-        /^Estampille/u,
-        /^Galenische\s*Form|^Forme\s*gal.nique/iu,
-        /^Hersteller|^Fabricant/u,
-        /^IKS-Nummern?|Num.ros? OICM/iu,
-        /^Indikationen|^Indications/u,
-        /^Interaktionen|^Interactions/u,
-        /^Kontrainikationnen/u,
-        /^Num.ro\s+d.autorisation/iu,
-        /^Pr&auml;klinische\s+Daten/u,
-        /^Pharmakokinetik?|Pharmacocin.tique?/iu,
-        /^Principes\s*actifs/u,
-        /^Sonstige|^Remarques/u,
-        /^Schwanderschaft\/Stillzeit/u,
-        /^Stand\s+der\s+Information|Mise\s+.\s+jour/iu,
-        /^Unerw&uuml;nschte\s+Wirkungen/u,
-        /^&Uuml;berdosierung|^Surdosage/u,
-        /^Vertrieb|^Distributeur/u,
-        /^Wahnhinweise\s+und\s+Vorsichsmassnahmen/u,
-        /^Weitere\s+Angaben|Informations suppl.mentaires/iu,
-        /^Wirkunf\s+auf\s+die\s+Fahrtüchtigkeit/u,
-        /^Zulassungs(vermerk|nummer|inhaberin)/u, 
-        /^Zusammensetzung/u,
-        /^9\.11\.2001|^AMZV|^OEM.d/u,
-      ].each do |chapter|
-        if text =~ chapter
-          id = CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s|\//, '_').downcase)
-          @indecies << {:text => text, :id => id}
-          return tag(:h2, text, {:id => id})
+    def build_block(r, text)
+      text = text.strip
+      # TODO
+      # Franzoesisch
+      chapters = {
+        'Dos./Anw.'       => /^Dosierung\s*\/\s*Anwendung/u, # 5
+        'Eigensch.'       => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)|^Propri.t.s/iu, # 13
+        'Galen.Form'      => /^Galenische\s+Form\s+und\s+Wirkstoffmenge\s+pro\s+Einheit$|^Forme\s*gal.nique/iu, # 3
+        'Ind./Anw.mögl.'  => /^Indikationen(\s+|\s*\/\s*)Anwendungsm&ouml;glichkeiten$|^Indications/u, # 4
+        'Interakt.'       => /^Interaktionen$|^Interactions/u, # 8
+        'Kontraind.'      => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
+        'Name'            => /^Name\s+des\s+Pr&auml;parates$/, # 1
+        'Packungen'       => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
+        'Präklin.'        => /^Pr&auml;klinische\s+Daten$/u, # 15
+        'Pharm.kinetik'   =>  /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)|^Pharmacocin.tique?/iu, # 14
+        'Sonstige H.'     => /^Sonstige\s*Hisweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
+        'Schwangerschaft' => /^Schwangerschaft(,\s*|\s*\/\s*)Stillzeit$/u, # 9
+        'Stand d. Info.'  => /^Stand\s+der\s+Information$|^Mise\s+.\s+jour$/iu, # 20
+        'Unerw.Wirkungen' => /^Unerw&uuml;nschte\s+Wirkungen$/u, # 11
+        'Überdos.'        => /^&Uuml;berdosierung$|^Surdosage$/u, # 12
+        'Warn.hinw.'      => /^Warnhinweise\s+und\s+Vorsichtsmassnahmen($|\s*\/\s*(relative\s+Kontraindikationen|Warnhinweise\s*und\s*Vorsichtsmassnahmen)$)/u, # 7
+        'Fahrtücht.'      => /^Wirkung\s+auf\s+die\s+Fahrt&uuml;chtigkeit\s+und\s+auf\s+das\s+Bedienen\s+von\s+Maschinen$/u, # 10
+        'Swissmedic-Nr.'  => /^Zulassungsnummer($|\s*\(\s*Swissmedic\s*\)$)/u, # 17
+        'Reg.Inhaber'     => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
+        'Zusammens.'      => /^Zusammensetzung($|\s*\/\s*(Wirkstoffe|Hilsstoffe)$)/u, # 2
+        # old ?
+        #/^Hersteller|^Fabricant/u,
+        #/^IKS-Nummern?|^Num.ros? OICM/iu,
+        #/^Auslieferung|^R.partiteur/u,
+        #/^Composition|^Principes\s*actifs/u,
+        #/^Estampille/u,
+        #/^Num.ro\s+d.autorisation/iu,
+        #/^Principes\s*actifs/u,
+        #/^Vertrieb$|^Distributeur$/u,
+        #/^Weitere\s+Angaben$|^Informations suppl.mentaires$/iu,
+        #/^Zulassungsvermerk$/u,
+        #/^9\.11\.2001i$|^AMZV$|^OEM.d$/u,
+      }.each_pair do |chapter, regexp|
+        if text =~ regexp
+          next unless r.next.nil? # without line break
+          rpr = r.xpath('w:rPr')
+          if !rpr.xpath('w:sz').empty? or
+             !rpr.xpath('w:szCs').empty?
+            id = CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
+            @indecies << {:text => chapter, :id => id}
+            return tag(:h3, text, {:id => id})
+          end
         end
       end
       nil
@@ -71,27 +84,33 @@ table, tr, td {
 td {
   padding: 5px 10px;
 }
-html body {
-  position: absolute;
+body {
+  position: relative;
+  padding:  0 0 20px 0;
+  margin:   0px;
+  width:    100%;
+  height:   auto;
 }
 div#indecies {
   position: relative;
+  padding:  0px;
   float:    left;
-  width:    25%;
+  width:    200px;
 }
 div#indecies ul {
-  padding-left: 20px;
+  margin:  0;
+  padding: 0 0 0 25px;
 }
 div#container {
-  position: relative;
-  float:    right;
-  width:    75%;
+  position:    relative;
+  padding:     0px;
+  float:       top left;
+  margin-left: 200px;
 }
 div#footer {
   position:      relative;
+  float:         bottom right;
   text-align:    right;
-  float:         right;
-  width:         100%;
   padding-right: 25px;
 }
       CSS

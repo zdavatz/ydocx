@@ -84,8 +84,8 @@ module Docx2html
     def build_before_content
       nil
     end
-    def build_block(text)
-      text #default no block element
+    def build_block(r, text)
+      nil #default no block element
     end
     def optional_escape(text)
       return text = '&nbsp;' if text.empty?
@@ -166,11 +166,10 @@ module Docx2html
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
         text = apply_fonts(rpr, text)
-        text = apply_align(rpr, text)
-        block = build_block(text)
-        if block
+        if block = build_block(r, text)
           block
         else
+          text = apply_align(rpr, text)
           # inline tag
           unless rpr.xpath('w:u').empty?
             text = tag(:span, text, {:style => "text-decoration:underline;"})
