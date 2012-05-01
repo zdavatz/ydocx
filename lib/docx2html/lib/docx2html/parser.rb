@@ -146,28 +146,40 @@ module Docx2html
       # pending
     end
     def parse_paragraph(node)
-      paragraph = tag :p
+      content = []
       line_head = true
       pos = 0
       node.xpath('w:r').each do |r|
         unless r.xpath('w:t').empty?
-          paragraph[:content] << parse_text(r)
+          content << parse_text(r)
           pos += 1
         else
           unless r.xpath('w:tab').empty?
-            if paragraph[:content].last != @space and pos != 0 # ignore tab at line head
-              paragraph[:content] << optional_escape('')
+            if content.last != @space and pos != 0 # ignore tab at line head
+              content << optional_escape('')
               pos += 1
             end
           end
           unless r.xpath('w:sym').empty?
             code = r.xpath('w:sym').first['char'].downcase # w:char
-            paragraph[:content] << optional_replace(code)
+            content << optional_replace(code)
             pos += 1
           end
         end
       end
-      paragraph
+      content.compact!
+      unless content.empty?
+        paragraph = content.select do |c|
+          c.is_a?(Hash) and c[:tag].to_s =~ /^h[1-9]/u
+        end.empty?
+        if paragraph
+          tag :p, content
+        else
+          content.first
+        end
+      else
+        {}
+      end
     end
     def parse_table(node)
       table = tag :table

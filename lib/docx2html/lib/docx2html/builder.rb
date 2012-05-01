@@ -57,7 +57,11 @@ module Docx2html
       nil
     end
     def build_tag(tag, content, attributes)
-      return '' if content.empty?
+      if tag == :br
+        return "<br/>"
+      elsif content.empty?
+        return ''
+      end
       _content = ''
       if content.is_a? Array
         content.each do |c|
@@ -80,7 +84,7 @@ module Docx2html
           _attributes << " #{k.to_s}=#{v.to_s}"
         end
       end
-      "<#{_tag}#{_attributes}>#{_content}</#{_tag}>"
+      return "<#{_tag}#{_attributes}>#{_content}</#{_tag}>"
     end
     def style
       style = <<-CSS
