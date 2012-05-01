@@ -2,22 +2,39 @@
 # encoding: utf-8
 
 require 'nokogiri'
+require 'docx2html/html_methods'
 
 module Docx2html
   class Builder
-    attr_accessor :title, :style
+    include HtmlMethods
+    attr_accessor :body, :indecies, :style, :title
     def initialize(body)
-      @title = ''
-      @style = false
       @body = body
+      @container = {}
+      @indecies = []
+      @style = false
+      @title = ''
+      init
       if block_given?
         yield self
       end
     end
+    def init
+    end
     def build
+      if @container.has_key?(:content)
+        @container[:content] = @body
+        @body = [@container]
+      end
+      if before_content = build_before_content
+        @body.unshift before_content
+      end
+      if after_content = build_after_content
+        @body.push after_content
+      end
       body = ''
       @body.each do |e|
-        body << _build(e[:tag], e[:content], e[:attributes])
+        body << build_tag(e[:tag], e[:content], e[:attributes])
       end
       builder = Nokogiri::HTML::Builder.new do |doc|
         doc.html {
@@ -31,20 +48,27 @@ module Docx2html
       end
       builder.to_html.gsub(/\n/, '')
     end
-    def _build(tag, content, attributes)
+    private
+    def build_after_content
+      nil
+    end
+    def build_before_content
+      nil
+    end
+    def build_tag(tag, content, attributes)
       return '' if content.empty?
       _content = ''
       if content.is_a? Array
         content.each do |c|
           next if c.nil? or c.empty?
           if c.is_a? Hash
-            _content << _build(c[:tag], c[:content], c[:attributes])
+            _content << build_tag(c[:tag], c[:content], c[:attributes])
           elsif c.is_a? String
             _content << c.chomp.to_s
           end
         end
       elsif content.is_a? Hash
-        _content = _build(content[:tag], content[:content], content[:attributes])
+        _content = build_tag(content[:tag], content[:content], content[:attributes])
       elsif content.is_a? String
         _content = content
       end
@@ -62,6 +86,9 @@ module Docx2html
 table, tr, td {
   border-collapse: collapse;
   border:          1px solid gray;
+}
+table {
+  margin: 5px 0 5px 0;
 }
 td {
   padding: 5px 10px;

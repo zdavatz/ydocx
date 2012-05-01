@@ -3,13 +3,16 @@
 
 require 'nokogiri'
 require 'htmlentities'
+require 'docx2html/html_methods'
 
 module Docx2html
   class Parser
+    include HtmlMethods
+    attr_accessor :indecies, :result
     def initialize(stream)
       @xml = Nokogiri::XML.parse(stream)
       @coder = HTMLEntities.new
-      @container = nil
+      @indecies = []
       @result = []
       init
       if block_given?
@@ -32,18 +35,6 @@ module Docx2html
         else
           # skip
         end
-      end
-      # TODO
-      #   builder?
-      if @container
-        @container[:content] = @result
-        @result = [@container]
-      end
-      if before_content = build_before_content
-        @result.unshift before_content
-      end
-      if after_content = build_after_content
-        @result.push after_content
       end
       @result
     end
@@ -78,44 +69,76 @@ module Docx2html
       end
       text
     end
-    def build_after_content
-      nil
-    end
-    def build_before_content
-      nil
-    end
-    def build_block(r, text)
-      nil #default no block element
+    def parse_as_block(r, text)
+      nil # default no block element
     end
     def optional_escape(text)
       return text = '&nbsp;' if text.empty?
       text.force_encoding('utf-8')
-      #NOTE
-      #  :named only for escape at Builder
+      # NOTE
+      # :named only for escape at Builder
       text = @coder.encode(text, :named)
       text
     end
     def optional_replace(code)
       code = '0x' + code
-      #NOTE
-      #  replace with rsemble html character ref
-      #  Symbol Font to HTML Character named ref
+      # NOTE
+      # replace with rsemble html character ref
+      # Symbol Font to HTML Character named ref
       case code
+      when '0xf020' # '61472'
+        ""
+      when '0xf025' # '61477'
+        "%"
+      when '0xf02b' # '61482'
+        "*"
+      when '0xf02b' # '61483'
+        "+"
+      when '0xf02d' # '61485'
+        "-"
+      when '0xf02f' # '61487'
+        "/"
+      when '0xf03c' # '61500'
+        "&lt;"
+      when '0xf03d' # '61501'
+        "="
+      when '0xf03e' # '61502'
+        "&gt;"
+      when '0xf040' # '61504'
+        "&cong;"
+      when '0xf068' # '61544'
+        "&eta;"
+      when '0xf071' # '61553'
+        "&theta;"
       when '0xf06d' # '61549'
         "&mu;"
+      when '0xf0a3' # '61603'
+        "&le;"
+      when '0xf0ab' # '61611'
+        "&harr;"
+      when '0xf0ac' # '61612'
+        "&larr;"
+      when '0xf0ad' # '61613'
+        "&uarr;"
+      when '0xf0ae' # '61614'
+        "&rarr;"
+      when '0xf0ad' # '61615'
+        "&darr;"
       when '0xf0b1' # '61617'
         "&plusmn;"
       when '0xf0b2' # '61618'
-        "&le";
+        "&Prime;"
       when '0xf0b3' # '61619'
         "&ge;"
+      when '0xf0b4' # '61620'
+        "&times;"
       when '0xf0b7' # '61623'
         "&sdot;"
       else
         #p "code : " + ("&#%s;" % code)
         #p "hex  : " + code.hex.to_s
         #p "char : " + @coder.decode("&#%s;" % code)
-        @coder.decode("&#%s;" % code.hex.to_s)
+        #@coder.decode("&#%s;" % code.hex.to_s)
       end
     end
     def parse_image
@@ -166,11 +189,11 @@ module Docx2html
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
         text = apply_fonts(rpr, text)
-        if block = build_block(r, text)
+        if block = parse_as_block(r, text)
           block
         else
-          text = apply_align(rpr, text)
           # inline tag
+          text = apply_align(rpr, text)
           unless rpr.xpath('w:u').empty?
             text = tag(:span, text, {:style => "text-decoration:underline;"})
           end
@@ -185,18 +208,6 @@ module Docx2html
       else
         text
       end
-    end
-    def push
-    end
-    def unshift
-    end
-    def tag(tag, content = [], attributes = {})
-      tag_hash = {
-        :tag        => tag,
-        :content    => content,
-        :attributes => attributes
-      }
-      tag_hash
     end
   end
 end
