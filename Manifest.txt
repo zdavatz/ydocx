@@ -10,3 +10,4 @@ lib/docx2html/lib/docx2html/document.rb
 lib/docx2html/lib/docx2html/html_methods.rb
 lib/docx2html/lib/docx2html/parser.rb
 lib/fachinfo.rb
+lib/version.rb
