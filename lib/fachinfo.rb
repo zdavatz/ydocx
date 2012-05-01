@@ -8,7 +8,9 @@ module Docx2html
     private
     def parse_as_block(r, text)
       if r.parent.previous.nil?
-        # first line is package name
+        # The first line as package name
+        link = tag(:a, text, {:href => ''})
+        @indecies << tag(:h2, link)
         return tag(:h2, text)
       end
       text = text.strip
@@ -58,8 +60,13 @@ module Docx2html
     def build_before_content
       if @indecies
         indices = []
+        if @indecies.first.has_key?(:tag) and @indecies.first[:tag] == :h2
+          indices << @indecies.shift
+        end
         @indecies.each do |index|
-          indices << tag(:li, tag(:a, index[:text], {:href => "#" + index[:id]}))
+          if index.has_key?(:id)
+            indices << tag(:li, tag(:a, index[:text], {:href => "#" + index[:id]}))
+          end
         end
         tag(:div, tag(:ul, indices), {:id => 'indecies'})
       end
@@ -78,7 +85,7 @@ td {
 }
 body {
   position: relative;
-  padding:  0 0 20px 0;
+  padding:  0 0 25px 0;
   margin:   0px;
   width:    100%;
   height:   auto;
@@ -92,11 +99,11 @@ div#indecies {
 }
 div#indecies ul {
   margin:  0;
-  padding: 0 0 0 25px;
+  padding: 5px 0 0 25px;
 }
 div#container {
   position: relative;
-  padding:  0px;
+  padding:  5px 0 0 0;
   float:    top left;
   margin:   0 0 0 200px;
 }
@@ -117,18 +124,20 @@ html {
 body{
   position: absolute;
   overflow: hidden;
+  padding:  0;
   height:   100%;
   width:    100%;
 }
 div#indecies {
   position: absolute;
-  margin:   20px 0 0 0;
+  osition:  fixed;
   height:   100%;
   left:     0;
   top:      0;
 }
 div#container {
   position: absolute;
+  padding:  0;
   height:   100%;
   overflow: auto;
 }
