@@ -8,12 +8,13 @@ require 'docx2html/lib/docx2html/html_methods'
 module Docx2html
   class Parser
     include HtmlMethods
-    attr_accessor :indecies, :result
+    attr_accessor :indecies, :result, :space
     def initialize(stream)
       @xml = Nokogiri::XML.parse(stream)
       @coder = HTMLEntities.new
       @indecies = []
       @result = []
+      @space = '&nbsp;'
       init
       if block_given?
         yield self
@@ -73,7 +74,7 @@ module Docx2html
       nil # default no block element
     end
     def optional_escape(text)
-      return text = '&nbsp;' if text.empty?
+      return text = @space if text.empty?
       text.force_encoding('utf-8')
       # NOTE
       # :named only for escape at Builder
@@ -146,18 +147,23 @@ module Docx2html
     end
     def parse_paragraph(node)
       paragraph = tag :p
+      line_head = true
+      pos = 0
       node.xpath('w:r').each do |r|
         unless r.xpath('w:t').empty?
           paragraph[:content] << parse_text(r)
+          pos += 1
         else
           unless r.xpath('w:tab').empty?
-            if paragraph[:content].last != '&nbsp;' # as a space
+            if paragraph[:content].last != @space and pos != 0 # ignore tab at line head
               paragraph[:content] << optional_escape('')
+              pos += 1
             end
           end
           unless r.xpath('w:sym').empty?
             code = r.xpath('w:sym').first['char'].downcase # w:char
             paragraph[:content] << optional_replace(code)
+            pos += 1
           end
         end
       end
@@ -193,6 +199,7 @@ module Docx2html
           block
         else
           # inline tag
+          text = text.strip
           text = apply_align(rpr, text)
           unless rpr.xpath('w:u').empty?
             text = tag(:span, text, {:style => "text-decoration:underline;"})
