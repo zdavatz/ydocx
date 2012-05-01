@@ -1,9 +1,9 @@
-ydocx - © ywesee GmbH
-=====
+== ydocx - © ywesee GmbH
 
-Parsing docx files with Ruby and output them as HTML.
+* https://github.com/zdavatz/ydocx
+* Parsing docx files with Ruby and output them as HTML.
 
-## Supports
+== Supports
 
 * Tables
 * Uppercase letters, numbers
@@ -11,11 +11,11 @@ Parsing docx files with Ruby and output them as HTML.
 * Umlaute
 * bold, italic, underline
 
-## Using the great libraries
+== Using the great libraries
 
 * nokogiri
 * htmlentities
 
-## License GPLv2.1
+== License GPLv2.1
 
 * http://www.gnu.org/licenses/lgpl-2.1.html
