@@ -6,12 +6,15 @@ require 'cgi'
 module Docx2html
   class Parser
     private
+    def escape(text)
+      CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
+    end
     def parse_as_block(r, text)
-      if r.parent.previous.nil?
+      if r.parent.previous.nil? and @indecies.empty?
         # The first line as package name
-        link = tag(:a, text, {:href => ''})
-        @indecies << tag(:h2, link)
-        return tag(:h2, text)
+        id = escape('titel')
+        @indecies << {:text => 'Titel', :id => id}
+        return tag(:h2, text, {:id => id})
       end
       text = text.strip
       # TODO
@@ -40,7 +43,7 @@ module Docx2html
       }.each_pair do |chapter, regexp|
         if text =~ regexp
           next unless r.next.nil? # without line break
-          id = CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
+          id = escape(text)
           @indecies << {:text => chapter, :id => id}
           return tag(:h3, text, {:id => id})
         end
@@ -53,19 +56,13 @@ module Docx2html
       @container = tag(:div, [], {:id => 'container'})
     end
     private
-    def build_after_content
-      link = tag(:a, 'Top', {:href => ''})
-      tag(:div, link, {:id => 'footer'})
-    end
     def build_before_content
       if @indecies
         indices = []
-        if @indecies.first.has_key?(:tag) and @indecies.first[:tag] == :h2
-          indices << @indecies.shift
-        end
         @indecies.each do |index|
           if index.has_key?(:id)
-            indices << tag(:li, tag(:a, index[:text], {:href => "#" + index[:id]}))
+            link = tag(:a, index[:text], {:href => "#" + index[:id]})
+            indices << tag(:li, link)
           end
         end
         tag(:div, tag(:ul, indices), {:id => 'indecies'})
@@ -99,19 +96,13 @@ div#indecies {
 }
 div#indecies ul {
   margin:  0;
-  padding: 5px 0 0 25px;
+  padding: 25px 0 0 25px;
 }
 div#container {
   position: relative;
   padding:  5px 0 0 0;
   float:    top left;
   margin:   0 0 0 200px;
-}
-div#footer {
-  position:   relative;
-  float:      bottom right;
-  text-align: right;
-  padding:    0 25px 0 0;
 }
       CSS
       if @style == :frame
@@ -130,7 +121,7 @@ body{
 }
 div#indecies {
   position: absolute;
-  osition:  fixed;
+  padding:  0;
   height:   100%;
   left:     0;
   top:      0;
@@ -140,9 +131,6 @@ div#container {
   padding:  0;
   height:   100%;
   overflow: auto;
-}
-div#footer {
-  padding: 10px 30px 0 0;
 }
         FRAME
       end
