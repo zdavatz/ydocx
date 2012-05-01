@@ -1,0 +1,11 @@
+History.txt
+Manifest.txt
+README
+Rakefile
+bin/docx2html
+lib/docx2html/bin/docx2html
+lib/docx2html/lib/docx2html.rb
+lib/docx2html/lib/docx2html/builder.rb
+lib/docx2html/lib/docx2html/document.rb
+lib/docx2html/lib/docx2html/parser.rb
+lib/fachinfo.rb
