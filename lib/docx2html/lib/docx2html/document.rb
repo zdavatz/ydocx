@@ -21,7 +21,7 @@ module Docx2html
       html = ''
       Builder.new(@contents) do |builder|
         builder.title = @path
-        builder.style = options[:style]
+        builder.style = options[:style] if options.has_key?(:style)
         if @indecies
           builder.indecies = @indecies
         end

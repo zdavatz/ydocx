@@ -7,7 +7,8 @@ require 'docx2html/html_methods'
 module Docx2html
   class Builder
     include HtmlMethods
-    attr_accessor :body, :indecies, :style, :title
+    attr_accessor :body, :indecies, :title,
+                  :frame, :style
     def initialize(body)
       @body = body
       @container = {}

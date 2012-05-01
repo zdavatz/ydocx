@@ -68,7 +68,7 @@ module Docx2html
       style = <<-CSS
 table, tr, td {
   border-collapse: collapse;
-  border: 1px solid gray;
+  border:          1px solid gray;
 }
 table {
   margin: 5px 0 5px 0;
@@ -86,6 +86,7 @@ body {
 div#indecies {
   position: relative;
   padding:  0px;
+  margin:   0px;
   float:    left;
   width:    200px;
 }
@@ -94,18 +95,48 @@ div#indecies ul {
   padding: 0 0 0 25px;
 }
 div#container {
-  position:    relative;
-  padding:     0px;
-  float:       top left;
-  margin-left: 200px;
+  position: relative;
+  padding:  0px;
+  float:    top left;
+  margin:   0 0 0 200px;
 }
 div#footer {
-  position:      relative;
-  float:         bottom right;
-  text-align:    right;
-  padding-right: 25px;
+  position:   relative;
+  float:      bottom right;
+  text-align: right;
+  padding:    0 25px 0 0;
 }
       CSS
+      if @style == :frame
+        style << <<-FRAME
+html {
+  overflow: hidden;
+  height:   100%;
+  width:    100%;
+}
+body{
+  position: absolute;
+  overflow: hidden;
+  height:   100%;
+  width:    100%;
+}
+div#indecies {
+  position: absolute;
+  margin:   20px 0 0 0;
+  height:   100%;
+  left:     0;
+  top:      0;
+}
+div#container {
+  position: absolute;
+  height:   100%;
+  overflow: auto;
+}
+div#footer {
+  padding: 10px 30px 0 0;
+}
+        FRAME
+      end
       style.gsub(/\s\s+|\n/, ' ')
     end
   end

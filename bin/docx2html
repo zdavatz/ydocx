@@ -20,6 +20,9 @@ if file = ARGV.first
     if true
       require 'fachinfo'
     end
-    Docx2html::Document.open(file).to_html file, :style => true
+    options = {
+      :style => :frame
+    }
+    Docx2html::Document.open(file).to_html file, options
   end
 end
