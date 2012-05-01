@@ -10,7 +10,7 @@ require 'hoe'
 # Hoe.plugin :racc
 # Hoe.plugin :rubyforge
 
-Hoe.spec 'docx' do
+Hoe.spec 'ydocx' do
 
   developer('Yasuhiro Asaka, Zeno R.R. Davatz', 'yasaka@ywesee.com,  zdavatz@ywesee.com')
 
