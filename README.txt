@@ -16,6 +16,6 @@
 * nokogiri
 * htmlentities
 
-== License GPLv2.1
+== License GPLv3.0
 
-* http://www.gnu.org/licenses/lgpl-2.1.html
+* http://www.gnu.org/licenses/gpl.html
