@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 require 'nokogiri'
-require 'docx2html/html_methods'
+require 'docx2html/lib/docx2html/html_methods'
 
 module Docx2html
   class Builder

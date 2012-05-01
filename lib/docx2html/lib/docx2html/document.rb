@@ -3,8 +3,8 @@
 
 require 'pathname'
 require 'zip/zip'
-require 'docx2html/parser'
-require 'docx2html/builder'
+require 'docx2html/lib/docx2html/parser'
+require 'docx2html/lib/docx2html/builder'
 
 module Docx2html
   class Document
