@@ -59,7 +59,7 @@ module Docx2html
     def build_tag(tag, content, attributes)
       if tag == :br
         return "<br/>"
-      elsif content.empty?
+      elsif content.nil? or content.empty?
         return ''
       end
       _content = ''
