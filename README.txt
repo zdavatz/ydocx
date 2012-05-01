@@ -1,6 +1,7 @@
 == ydocx - © ywesee GmbH
 
-Parsing docx files with Ruby and output them as HTML.
+* https://github.com/zdavatz/ydocx
+* Parsing docx files with Ruby and output them as HTML.
 
 == Supports
 
