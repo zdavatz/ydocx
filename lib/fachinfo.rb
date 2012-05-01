@@ -20,10 +20,10 @@ module Docx2html
       # TODO
       # Franzoesisch
       chapters = {
-        'Dos./Anw.'       => /^Dosierung\s*\/\s*Anwendung/u, # 5
+        'Dos./Anw.'       => /^Dosierung\s*(\/|und)\s*Anwendung/u, # 5
         'Eigensch.'       => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)|^Propri.t.s/iu, # 13
-        'Galen.Form'      => /^Galenische\s+Form\s+und\s+Wirkstoffmenge\s+pro\s+Einheit$|^Forme\s*gal.nique/iu, # 3
-        'Ind./Anw.mögl.'  => /^Indikationen(\s+|\s*\/\s*)Anwendungsm&ouml;glichkeiten$|^Indications/u, # 4
+        'Galen.Form'      => /^Galenische\s+Form\s*(und|\/)\s*Wirkstoffmenge\s+pro\s+Einheit$|^Forme\s*gal.nique/iu, # 3
+        'Ind./Anw.mögl.'  => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsm&ouml;glichkeiten$|^Indications/u, # 4
         'Interakt.'       => /^Interaktionen$|^Interactions/u, # 8
         'Kontraind.'      => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
         'Name'            => /^Name\s+des\s+Pr&auml;parates$/, # 1
@@ -31,7 +31,7 @@ module Docx2html
         'Präklin.'        => /^Pr&auml;klinische\s+Daten$/u, # 15
         'Pharm.kinetik'   =>  /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)|^Pharmacocin.tique?/iu, # 14
         'Sonstige H.'     => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
-        'Schwangerschaft' => /^Schwangerschaft(,\s*|\s*\/\s*)Stillzeit$/u, # 9
+        'Schwangerschaft' => /^Schwangerschaft(,\s*|\s*\/\s*|\s+und\s+)Stillzeit$/u, # 9
         'Stand d. Info.'  => /^Stand\s+der\s+Information$|^Mise\s+.\s+jour$/iu, # 20
         'Unerw.Wirkungen' => /^Unerw&uuml;nschte\s+Wirkungen$/u, # 11
         'Überdos.'        => /^&Uuml;berdosierung$|^Surdosage$/u, # 12
