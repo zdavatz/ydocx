@@ -13,19 +13,18 @@ module Docx2html
       self.new(file)
     end
     def initialize(file)
-      @path = File.expand_path(file)
-      @zip = Zip::ZipFile.open(@path)
-      stream = @zip.find_entry('word/document.xml').get_input_stream
-      Parser.new(stream) do |parser|
-        @contents = parser.parse
-      end
-      @zip.close
+      @contents = nil
+      @indecies = nil
+      read(file)
     end
     def to_html(file='', options={})
       html = ''
       Builder.new(@contents) do |builder|
         builder.title = @path
         builder.style = options[:style]
+        if @indecies
+          builder.indecies = @indecies
+        end
         html = builder.build
       end
       unless file.empty?
@@ -36,6 +35,17 @@ module Docx2html
       else
         html
       end
+    end
+    private
+    def read(file)
+      @path = File.expand_path(file)
+      @zip = Zip::ZipFile.open(@path)
+      stream = @zip.find_entry('word/document.xml').get_input_stream
+      Parser.new(stream) do |parser|
+        @contents = parser.parse
+        @indecies = parser.indecies
+      end
+      @zip.close
     end
   end
 end
