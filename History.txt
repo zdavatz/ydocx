@@ -1,3 +1,13 @@
+=== 1.0.4 / 02.05.2012
+
+* Fixed bug for action to_xml in command
+* Updated help message
+* Added option handling into command
+* Improved heading/chapter detection
+* Added docx2xml/to_xml simple xml format output
+* Changed module and lib structure
+* Updated executable file
+
 === 1.0.3 / 01.05.2012
 
 * Fixed blank tag without fachinfo format
