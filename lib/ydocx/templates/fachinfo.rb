@@ -52,6 +52,15 @@ module YDocx
     def init
       @container = markup(:div, [], {:id => 'container'})
     end
+    def build_xml
+      chapters = compile(@contents, :xml)
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.document {
+          xml.chapters { xml << chapters }
+        }
+      end
+      builder.to_xml(:indent => 0, :encoding => 'utf-8').gsub(/\n/, '')
+    end
     private
     def build_before_content
       if @indecies

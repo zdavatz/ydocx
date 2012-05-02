@@ -47,10 +47,10 @@ module YDocx
       builder.to_html.gsub(/\n/, '')
     end
     def build_xml
-      chapters = compile(@contents, :xml) 
+      paragraphs = compile(@contents, :xml)
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.document {
-          xml.chapters { xml << chapters }
+          xml.paragraphs { xml << paragraphs }
         }
       end
       builder.to_xml(:indent => 0, :encoding => 'utf-8').gsub(/\n/, '')
