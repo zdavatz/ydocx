@@ -3,11 +3,10 @@ Manifest.txt
 README.txt
 Rakefile
 bin/docx2html
-lib/docx2html/bin/docx2html
-lib/docx2html/lib/docx2html.rb
-lib/docx2html/lib/docx2html/builder.rb
-lib/docx2html/lib/docx2html/document.rb
-lib/docx2html/lib/docx2html/html_methods.rb
-lib/docx2html/lib/docx2html/parser.rb
-lib/fachinfo.rb
 lib/version.rb
+lib/ydocx.rb
+lib/ydocx/builder.rb
+lib/ydocx/document.rb
+lib/ydocx/markup_method.rb
+lib/ydocx/parser.rb
+lib/templates/fachinfo.rb

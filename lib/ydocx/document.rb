@@ -3,12 +3,12 @@
 
 require 'pathname'
 require 'zip/zip'
-require 'docx2html/lib/docx2html/parser'
-require 'docx2html/lib/docx2html/builder'
+require 'ydocx/parser'
+require 'ydocx/builder'
 
-module Docx2html
+module YDocx
   class Document
-    attr_reader :contents
+    attr_reader :contents, :indecies
     def self.open(file)
       self.new(file)
     end
@@ -25,7 +25,7 @@ module Docx2html
         if @indecies
           builder.indecies = @indecies
         end
-        html = builder.build
+        html = builder.build_html
       end
       unless file.empty?
         path = Pathname.new(file).realpath.sub_ext('.html')

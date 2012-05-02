@@ -3,7 +3,7 @@
 
 require 'cgi'
 
-module Docx2html
+module YDocx
   class Parser
     private
     def escape(text)
@@ -14,7 +14,7 @@ module Docx2html
         # The first line as package name
         id = escape('titel')
         @indecies << {:text => 'Titel', :id => id}
-        return tag(:h2, text, {:id => id})
+        return markup(:h2, text, {:id => id})
       end
       text = text.strip
       # TODO
@@ -45,7 +45,7 @@ module Docx2html
           next unless r.next.nil? # without line break
           id = escape(text)
           @indecies << {:text => chapter, :id => id}
-          return tag(:h3, text, {:id => id})
+          return markup(:h3, text, {:id => id})
         end
       end
       nil
@@ -53,7 +53,7 @@ module Docx2html
   end
   class Builder
     def init
-      @container = tag(:div, [], {:id => 'container'})
+      @container = markup(:div, [], {:id => 'container'})
     end
     private
     def build_before_content
@@ -61,11 +61,11 @@ module Docx2html
         indices = []
         @indecies.each do |index|
           if index.has_key?(:id)
-            link = tag(:a, index[:text], {:href => "#" + index[:id]})
-            indices << tag(:li, link)
+            link = markup(:a, index[:text], {:href => "#" + index[:id]})
+            indices << markup(:li, link)
           end
         end
-        tag(:div, tag(:ul, indices), {:id => 'indecies'})
+        markup(:div, markup(:ul, indices), {:id => 'indecies'})
       end
     end
     def style

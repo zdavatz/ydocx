@@ -3,11 +3,11 @@
 
 require 'nokogiri'
 require 'htmlentities'
-require 'docx2html/lib/docx2html/html_methods'
+require 'ydocx/markup_method'
 
-module Docx2html
+module YDocx
   class Parser
-    include HtmlMethods
+    include MarkupMethod
     attr_accessor :indecies, :result, :space
     def initialize(stream)
       @xml = Nokogiri::XML.parse(stream)
@@ -63,9 +63,9 @@ module Docx2html
       unless rpr.xpath('w:vertAlign').empty?
         script = rpr.xpath('w:vertAlign').first['val'].to_sym
         if script == :subscript
-          text = tag(:sub, text)
+          text = markup(:sub, text)
         elsif script == :superscript
-          text = tag(:sup, text)
+          text = markup(:sup, text)
         end
       end
       text
@@ -173,7 +173,7 @@ module Docx2html
           c.is_a?(Hash) and c[:tag].to_s =~ /^h[1-9]/u
         end.empty?
         if paragraph
-          tag :p, content
+          markup :p, content
         else
           content.first
         end
@@ -182,9 +182,9 @@ module Docx2html
       end
     end
     def parse_table(node)
-      table = tag :table
+      table = markup :table
       node.xpath('w:tr').each do |tr|
-        cells = tag :tr
+        cells = markup :tr
         tr.xpath('w:tc').each do |tc|
           attributes = {}
           tc.xpath('w:tcPr').each do |tcpr|
@@ -192,7 +192,7 @@ module Docx2html
               attributes[:colspan] = span.first['val'] # w:val
             end
           end
-          cell = tag :td, [], attributes
+          cell = markup :td, [], attributes
           tc.xpath('w:p').each do |p|
             cell[:content] << parse_paragraph(p)
           end
@@ -214,13 +214,13 @@ module Docx2html
           text = text.strip
           text = apply_align(rpr, text)
           unless rpr.xpath('w:u').empty?
-            text = tag(:span, text, {:style => "text-decoration:underline;"})
+            text = markup(:span, text, {:style => "text-decoration:underline;"})
           end
           unless rpr.xpath('w:i').empty?
-            text = tag(:em, text) 
+            text = markup(:em, text) 
           end
           unless rpr.xpath('w:b').empty?
-            text = tag(:strong, text)
+            text = markup(:strong, text)
           end
           text
         end

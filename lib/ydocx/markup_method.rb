@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-module Docx2html
-  module HtmlMethods
-    def tag(tag, content = [], attributes = {})
+module YDocx
+  module MarkupMethod
+    def markup(tag, content = [], attributes = {})
       tag_hash = {
         :tag        => tag,
         :content    => content,

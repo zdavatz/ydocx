@@ -2,15 +2,15 @@
 # encoding: utf-8
 
 require 'nokogiri'
-require 'docx2html/lib/docx2html/html_methods'
+require 'ydocx/markup_method'
 
-module Docx2html
+module YDocx
   class Builder
-    include HtmlMethods
-    attr_accessor :body, :indecies, :title,
-                  :frame, :style
-    def initialize(body)
-      @body = body
+    include MarkupMethod
+    attr_accessor :content, :container, :indecies,
+                  :style, :title
+    def initialize(content)
+      @content = content
       @container = {}
       @indecies = []
       @style = false
@@ -22,19 +22,21 @@ module Docx2html
     end
     def init
     end
-    def build
+    def build_html
+      content = @content
       if @container.has_key?(:content)
-        @container[:content] = @body
-        @body = [@container]
+        container = @container
+        container[:content] = content
+        content = [container]
       end
       if before_content = build_before_content
-        @body.unshift before_content
+        content.unshift before_content
       end
       if after_content = build_after_content
-        @body.push after_content
+        content.push after_content
       end
       body = ''
-      @body.each do |e|
+      content.each do |e|
         body << build_tag(e[:tag], e[:content], e[:attributes])
       end
       builder = Nokogiri::HTML::Builder.new do |doc|
@@ -45,6 +47,23 @@ module Docx2html
             doc.style { doc << style } if @style
           }
           doc.body { doc << body }
+        }
+      end
+      builder.to_html.gsub(/\n/, '')
+    end
+    def build_xml
+      xml = ''
+      @content.each do |e|
+        body << build_tag(e[:tag], e[:content], e[:attributes])
+      end
+      builder = Nokogiri::HTML::Builder.new do |doc|
+        doc.html {
+          doc.head {
+            doc.meta :charset => 'utf-8'
+            doc.title @title
+            doc.style { doc << style } if @style
+          }
+          doc.body { doc << content }
         }
       end
       builder.to_html.gsub(/\n/, '')

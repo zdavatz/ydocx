@@ -7,7 +7,7 @@ if $0 == __FILE__
   $:.unshift root.join('lib')
 end
 
-require 'docx2html/lib/docx2html'
+require 'ydocx'
 
 if file = ARGV.first
   unless File.exist?(file) and File.extname(file).match(/^\.docx$/)
@@ -16,9 +16,9 @@ if file = ARGV.first
     options = {}
     # TODO args handling
     if true
-      require 'fachinfo'
+      require 'templates/fachinfo'
       options.merge!({:style => :frame})
     end
-    Docx2html::Document.open(file).to_html file, options
+    YDocx::Document.open(file).to_html file, options
   end
 end
