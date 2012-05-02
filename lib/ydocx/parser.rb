@@ -82,7 +82,6 @@ module YDocx
       nil # default no block element
     end
     def optional_escape(text)
-      return text = @space if text.empty?
       text.force_encoding('utf-8')
       # NOTE
       # :named only for escape at Builder
@@ -158,12 +157,12 @@ module YDocx
       pos = 0
       node.xpath('w:r').each do |r|
         unless r.xpath('w:t').empty?
-          content << parse_text(r)
+          content << parse_text(r, (pos == 0)) # rm indent
           pos += 1
         else
           unless r.xpath('w:tab').empty?
             if content.last != @space and pos != 0 # ignore tab at line head
-              content << optional_escape('')
+              content << @space
               pos += 1
             end
           end
@@ -209,7 +208,7 @@ module YDocx
       end
       table
     end
-    def parse_text(r)
+    def parse_text(r, strip=false)
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
@@ -218,7 +217,7 @@ module YDocx
           block
         else
           # inline tag
-          text = text.strip
+          text = text.strip if strip
           text = apply_align(rpr, text)
           unless rpr.xpath('w:u').empty?
             text = markup(:span, text, {:style => "text-decoration:underline;"})
