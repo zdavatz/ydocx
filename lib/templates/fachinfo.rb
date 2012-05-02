@@ -6,16 +6,7 @@ require 'cgi'
 module YDocx
   class Parser
     private
-    def escape(text)
-      CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
-    end
     def parse_as_block(r, text)
-      if r.parent.previous.nil? and @indecies.empty?
-        # The first line as package name
-        id = escape('titel')
-        @indecies << {:text => 'Titel', :id => id}
-        return markup(:h2, text, {:id => id})
-      end
       text = text.strip
       # TODO
       # Franzoesisch
@@ -42,13 +33,19 @@ module YDocx
         'Zusammens.'          => /^Zusammensetzung($|\s*\/\s*(Wirkstoffe|Hilsstoffe)$)/u, # 2
       }.each_pair do |chapter, regexp|
         if text =~ regexp
-          next unless r.next.nil? # without line break
-          id = escape(text)
+          next if !r.next.nil? and # skip matches in paragraph
+                  r.next.name.downcase != 'bookmarkend'
+          id = CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
           @indecies << {:text => chapter, :id => id}
           return markup(:h3, text, {:id => id})
         end
       end
-      nil
+      if r.parent.previous.nil? and @indecies.empty?
+        # The first line as package name
+        @indecies << {:text => 'Titel', :id => 'titel'}
+        return markup(:h2, text, {:id => 'titel'})
+      end
+      return nil
     end
   end
   class Builder
