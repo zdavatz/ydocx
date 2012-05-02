@@ -11,6 +11,12 @@
 * Umlaute
 * bold, italic, underline
 
+== Usage
+
+* Usage: /usr/local/bin/docx2html file [options]
+    -f, --format    Format of style and chapter {fi|fachinfo}, default none.
+    -h, --help      Display this help message.
+
 == Using the great libraries
 
 * nokogiri
