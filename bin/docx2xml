@@ -7,17 +7,6 @@ if $0 == __FILE__
   $:.unshift root.join('lib')
 end
 
-require 'ydocx'
+require 'ydocx/command'
 
-if file = ARGV.first
-  unless File.exist?(file) and File.extname(file).match(/^\.docx$/)
-    exit
-  else
-    options = {}
-    # TODO args handling
-    if true
-      require 'templates/fachinfo'
-    end
-    YDocx::Document.open(file).to_xml file, options
-  end
-end
+YDocx::Command.run(:to_xml)

@@ -146,8 +146,7 @@ module YDocx
       else
         #p "code : " + ("&#%s;" % code)
         #p "hex  : " + code.hex.to_s
-        #p "char : " + @coder.decode("&#%s;" % code)
-        #@coder.decode("&#%s;" % code.hex.to_s)
+        #p "char : " + @coder.decode("&#%s;" % code.hex.to_s)
       end
     end
     def parse_image
