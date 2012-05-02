@@ -19,8 +19,8 @@ module YDocx
       def help
         banner = <<-BANNER
 Usage: #{$0} file [options]
--f, --format    Format of style and chapter {fi|fachinfo}, default none.
--h, --help      Display this help message.
+  -f, --format    Format of style and chapter {fi|fachinfo}, default none.
+  -h, --help      Display this help message.
         BANNER
         puts banner
         exit
