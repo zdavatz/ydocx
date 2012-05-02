@@ -36,6 +36,20 @@ module YDocx
         html
       end
     end
+    def to_xml(file='', options={})
+      xml = ''
+      Builder.new(@contents) do |builder|
+        xml = builder.build_xml
+      end
+      unless file.empty?
+        path = Pathname.new(file).realpath.sub_ext('.xml')
+        File.open(path, 'w:utf-8') do |f|
+          f.puts xml
+        end
+      else
+        xml
+      end
+    end
     private
     def read(file)
       @path = File.expand_path(file)
