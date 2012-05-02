@@ -29,7 +29,7 @@ Usage: #{$0} file [options]
         dir = File.dirname path
         base = File.basename path, '.docx'
         ext = (action == :to_xml) ? '.xml' : '.html'
-        puts "#{self.command}: generated #{dir}#{base}#{ext}"
+        puts "#{self.command}: generated #{dir}/#{base}#{ext}"
         exit
       end
       def run(action=:to_html)
@@ -63,7 +63,7 @@ Usage: #{$0} file [options]
                 self.error "#{self.command}: exit with #{option}: Unknown option"
               end
             end
-            YDocx::Document.open(path).to_html path, options
+            YDocx::Document.open(path).send(action, path, options)
             self.report action, path
           end
         end
