@@ -12,19 +12,20 @@ module YDocx
       # Franzoesisch
       chapters = {
         'Ab&auml;nderung'     => /^Was\s+sollte\s+dazu\s+beachtet\s+werden\s*\??$/u, # 4
-        'Dos./Anw.'           => /^Wie\s+verwenden\s+Sie\s+\w+\s+\??$/u, # 8
+        'Dos./Anw.'           => /^Wie\s+verwenden\s+Sie\s+\w+\s*\??$/u, # 8
         'Eigensch.'           => /^Was\s+ist\s+\w+\s+und\s+wann\s+wird\s+es\s+angewendet\s*\??$/u, # 3
         'Gew&ouml;hnliche H.' => /^Was\s+ist\s+ferner\s+zu\s+beachten\s*\??$/u, # 10
         'Hersteller'          => /^Herstellerin$/u, # 15
-        #'' => /^Information\s+f&uuml;r\sPatientinnen\s+und\s+Patienten$/u, # 1 ignore
-        'Kontraind.'          => /^Wann\s+darf\s+\w\s+nicht\s+eingenommen\s*\/\s*angewendet\s*werden\s*\??$/u, # 5
+        'Information'         => /^Information\s+f&uuml;r\sPatientinnen\s+und\s+Patienten$/u, # 1
+        'Kontraind.'          => /^Wann\s+darf\s+\w+\s+nicht\s+(eingenommen\s*\/\s*angewendet|eingenommen|angewendet)\s*werden\s*\??$/u, # 5
         'Name'                => /^Name\s+des\s+Pr&auml;parates$/u, # 2
         'Packungen'           => /^Wo\s+erhalten\s+Sie\s+\w+\s*\?\s*Welche\s+Packungen\s+sind\s+erh&auml;ltlich\s*\??$/u, # 13
-        'Schwanderschaft'     => /^Darf\s+\w+\s+W&auml;hrend\s+einer\s+Schwangerschaft\s+oder\s+in\s+der\s+Stillzeit\s+eingenommen\s*\/\s*angewendet\s*werden\s*\??$/u, # 7
+        'Schwanderschaft'     => /^Darf\s+\w+\s+w&auml;hrend\s+einer\s+Schwangerschaft\s+oder\s+in\s+der\s+Stillzeit\s+(eingenommen\s*\/\s*angewendet|eingenommen|angewendet)\s*werden\s*\??$/u, # 7
         'Stand d. Info.'      => /^Diese\sPackungsbeilage\s+wurde\s+im\s+[\.A-z\s0-9]+(\s+|\s*\/\s*\w+\s+\(Monat\s*\/\s*Jahr\)\s*)letztmals\s+durch\s+die\s+Arzneimittelbeh&ouml;rde\s*\(\s*Swissmedic\s*\)\s*gepr&uuml;ft.?$/u, # 16
         'Swissmedic-Nr.'      => /^Zulassungsnummer$/u, # 12
-        'Unerw.Wirkungen'     => /^Welche\s+Nebenwirklungen\s+kann\s+\w+\s+haben\s+\??$/u, # 9
+        'Unerw.Wirkungen'     => /^Welche\s+Nebenwirkungen\s+kann\s+\w+\s+haben\s*\??$/u, # 9
         'Verteiler'           => /^Zulassungsinhaberin$/u, # 14
+        'Vorbeugung'          => /^Wann\s+ist\s+bei\s+der\s+(Einnahme\s*\/\s*Anwendung|Einnahme|Anwendung)\s*von\s+\w+\s+Vorsicht\s+geboten\s*\??$/u, # 6
         'Zusammens.'          => /^Was\s+ist\s+in\s+\w+\s+enthalten\s*\??$/u, # 11
       }.each_pair do |chapter, regexp|
         if text =~ regexp
