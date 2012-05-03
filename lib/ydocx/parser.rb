@@ -160,7 +160,8 @@ module YDocx
               if rel['Id'] == id and rel['Target']
                 target = rel['Target']
                 source = id.downcase + '/'
-                if ext = File.extname(target).match(/\.wmf$/).to_a[0]
+                if defined? Magick::Image and
+                   ext = File.extname(target).match(/\.wmf$/).to_a[0]
                   source << File.basename(target, ext) + '.png'
                 else
                   source << File.basename(target)
