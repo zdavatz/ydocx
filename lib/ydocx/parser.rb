@@ -208,7 +208,7 @@ module YDocx
       end
       table
     end
-    def parse_text(r, strip=false)
+    def parse_text(r, lstrip=false)
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
@@ -217,7 +217,7 @@ module YDocx
           block
         else
           # inline tag
-          text = text.strip if strip
+          text = text.lstrip if lstrip
           text = apply_align(rpr, text)
           unless rpr.xpath('w:u').empty?
             text = markup(:span, text, {:style => "text-decoration:underline;"})

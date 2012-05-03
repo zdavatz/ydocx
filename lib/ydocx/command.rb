@@ -52,7 +52,8 @@ Usage: #{$0} file [options]
                   require 'ydocx/templates/fachinfo'
                   options.merge!({:style => :frame}) if action == :to_html
                 when 'pi', 'patinfo'
-                  # pending
+                  require 'ydocx/templates/patinfo'
+                  options.merge!({:style => :frame}) if action == :to_html
                 when 'pl', 'plain'
                   options.merge!({:style => true}) if action == :to_html
                 else

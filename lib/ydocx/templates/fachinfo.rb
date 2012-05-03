@@ -6,6 +6,9 @@ require 'cgi'
 module YDocx
   class Parser
     private
+    def escape_as_id(text)
+      CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').gsub(/(\?|_$)/, '').downcase)
+    end
     def parse_as_block(r, text)
       text = text.strip
       # TODO
@@ -17,7 +20,7 @@ module YDocx
         'Ind./Anw.m&ouml;gl.' => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsm&ouml;glichkeiten$|^Indications/u, # 4
         'Interakt.'           => /^Interaktionen$|^Interactions/u, # 8
         'Kontraind.'          => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
-        'Name'                => /^Name\s+des\s+Pr&auml;parates$/, # 1
+        'Name'                => /^Name\s+des\s+Pr&auml;parates$/u, # 1
         'Packungen'           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
         'Pr&auml;klin.'       => /^Pr&auml;klinische\s+Daten$/u, # 15
         'Pharm.kinetik'       => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)|^Pharmacocin.tique?/iu, # 14
@@ -35,7 +38,7 @@ module YDocx
         if text =~ regexp
           next if !r.next.nil? and # skip matches in paragraph
                   r.next.name.downcase != 'bookmarkend'
-          id = CGI.escape(text.gsub(/&(.)uml;/, '\1').gsub(/\s*\/\s*|\/|\s+/, '_').downcase)
+          id = escape_as_id(text)
           @indecies << {:text => chapter, :id => id}
           return markup(:h3, text, {:id => id})
         end
