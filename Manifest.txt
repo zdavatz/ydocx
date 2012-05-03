@@ -12,3 +12,4 @@ lib/ydocx/markup_method.rb
 lib/ydocx/parser.rb
 lib/ydocx/command.rb
 lib/ydocx/templates/fachinfo.rb
+lib/ydocx/templates/patinfo.rb

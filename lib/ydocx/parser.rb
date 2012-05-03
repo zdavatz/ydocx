@@ -8,11 +8,13 @@ require 'ydocx/markup_method'
 module YDocx
   class Parser
     include MarkupMethod
-    attr_accessor :indecies, :result, :space
-    def initialize(stream)
-      @xml = Nokogiri::XML.parse(stream)
+    attr_accessor :indecies, :pictures, :result, :space
+    def initialize(doc, rel)
+      @doc = Nokogiri::XML.parse(doc)
+      @rel = Nokogiri::XML.parse(rel)
       @coder = HTMLEntities.new
       @indecies = []
+      @pictures = []
       @result = []
       @space = '&nbsp;'
       init
@@ -23,13 +25,13 @@ module YDocx
     def init
     end
     def parse
-      @xml.xpath('//w:document//w:body').children.map do |node|
+      @doc.xpath('//w:document//w:body').children.map do |node|
         case node.node_name
         when 'text'
           @result << parse_paragraph(node)
         when 'tbl'
           @result << parse_table(node)
-        when 'image'
+        when 'pict'
           # pending
         when 'p'
           @result << parse_paragraph(node)
@@ -148,8 +150,22 @@ module YDocx
         #p "char : " + @coder.decode("&#%s;" % code.hex.to_s)
       end
     end
-    def parse_image
-      # pending
+    def parse_image(r)
+      if pict = r.xpath('w:pict') and
+         shape = pict.xpath('v:shape') and
+         image = shape.xpath('v:imagedata')
+          id = image.first['id'] # r:id
+          @rel.xpath('/').children.each do |element|
+            element.children.each do |rel|
+              if rel['Id'] == id and rel['Target']
+                src = id.downcase + '/' + File.basename(rel['Target'])
+                @pictures << src
+                return markup :img, [], {:src => src}
+              end
+            end
+          end
+      end
+      nil
     end
     def parse_paragraph(node)
       content = []
@@ -170,6 +186,9 @@ module YDocx
             code = r.xpath('w:sym').first['char'].downcase # w:char
             content << optional_replace(code)
             pos += 1
+          end
+          unless r.xpath('w:pict').empty?
+            content << parse_image(r)
           end
         end
       end

@@ -2,17 +2,19 @@
 # encoding: utf-8
 
 require 'nokogiri'
+require 'pathname'
 require 'ydocx/markup_method'
 
 module YDocx
   class Builder
     include MarkupMethod
     attr_accessor :contents, :container, :indecies,
-                  :style, :title
+                  :files, :style, :title
     def initialize(contents)
       @contents = contents
       @container = {}
       @indecies = []
+      @files = Pathname.new('.')
       @style = false
       @title = ''
       init
@@ -87,7 +89,7 @@ module YDocx
       if tag == :br and mode != :xml
         return "<br/>"
       elsif content.nil? or content.empty?
-        return ''
+        return '' if attributes.nil? # without img
       end
       _content = ''
       if content.is_a? Array
@@ -109,7 +111,12 @@ module YDocx
       unless attributes.empty?
         attributes.each_pair do |key, value|
           next if mode == :xml and key.to_s =~ /(id|style|colspan)/u
-          _attributes << " #{key.to_s}=#{value.to_s}"
+          if tag == :img and key == :src
+            src = @files.join value.to_s
+            _attributes << " src=\"#{src}\""
+          else
+            _attributes << " #{key.to_s}=\"#{value.to_s}\""
+          end
         end
       end
       if mode == :xml
@@ -123,7 +130,11 @@ module YDocx
         when :sub     then _tag = 'subscript'   # text
         end
       end
-      return "<#{_tag}#{_attributes}>#{_content}</#{_tag}>"
+      if tag == :img
+        return "<#{_tag}#{_attributes}/>"
+      else
+        return "<#{_tag}#{_attributes}>#{_content}</#{_tag}>"
+      end
     end
     def style
       style = <<-CSS
