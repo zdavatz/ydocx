@@ -19,7 +19,7 @@ module YDocx
       def help
         banner = <<-BANNER
 Usage: #{$0} file [options]
-  -f, --format    Format of style and chapter {(fi|fachinfo)|(pl|plain)}, default none.
+  -f, --format    Format of style and chapter {(fi|fachinfo)|(pl|plain)|none}, default fachinfo.
   -h, --help      Display this help message.
         BANNER
         puts banner
@@ -56,6 +56,8 @@ Usage: #{$0} file [options]
                   options.merge!({:style => :frame}) if action == :to_html
                 when 'pl', 'plain'
                   options.merge!({:style => true}) if action == :to_html
+                when 'none'
+                  # pass
                 else
                   self.error "#{self.command}: exit with #{option}: Invalid argument"
                 end
@@ -64,6 +66,10 @@ Usage: #{$0} file [options]
               else
                 self.error "#{self.command}: exit with #{option}: Unknown option"
               end
+            else
+              # default fachinfo
+              require 'ydocx/templates/fachinfo'
+              options.merge!({:style => :frame}) if action == :to_html
             end
             YDocx::Document.open(path).send(action, path, options)
             self.report action, path
