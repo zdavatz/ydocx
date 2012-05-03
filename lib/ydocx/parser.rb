@@ -158,9 +158,18 @@ module YDocx
           @rel.xpath('/').children.each do |element|
             element.children.each do |rel|
               if rel['Id'] == id and rel['Target']
-                src = id.downcase + '/' + File.basename(rel['Target'])
-                @pictures << src
-                return markup :img, [], {:src => src}
+                target = rel['Target']
+                source = id.downcase + '/'
+                if ext = File.extname(target).match(/\.wmf$/).to_a[0]
+                  source << File.basename(target, ext) + '.png'
+                else
+                  source << File.basename(target)
+                end
+                @pictures << {
+                  :origin => target,
+                  :source => source
+                }
+                return markup :img, [], {:src => source}
               end
             end
           end

@@ -3,6 +3,7 @@
 
 require 'pathname'
 require 'zip/zip'
+require 'RMagick'
 require 'ydocx/parser'
 require 'ydocx/builder'
 
@@ -65,12 +66,21 @@ module YDocx
       FileUtils.mkdir @files unless @files.exist?
       @zip = Zip::ZipFile.open(@path.realpath)
       @pictures.each do |pic|
-        pic_path = Pathname.new pic # id/filename.ext
-        pic_dir = @files.join pic_path.dirname
-        FileUtils.mkdir pic_dir unless pic_dir.exist?
-        binary = @zip.find_entry("word/media/#{pic_path.basename}").get_input_stream
-        @files.join(pic_path).open('w') do |f|
-          f.puts binary.read
+        origin_path = Pathname.new pic[:origin] # media/filename.ext
+        source_path = Pathname.new pic[:source] # id/filename.ext
+        dir = @files.join source_path.dirname
+        FileUtils.mkdir dir unless dir.exist?
+        binary = @zip.find_entry("word/#{origin_path}").get_input_stream
+        if source_path.extname != origin_path.extname # convert
+          image = Magick::Image.from_blob(binary.read).first
+          image.format = source_path.extname[1..-1].upcase
+          @files.join(source_path).open('w') do |f|
+            f.puts image.to_blob
+          end
+        else
+          @files.join(source_path).open('w') do |f|
+            f.puts binary.read
+          end
         end
       end
       @zip.close
