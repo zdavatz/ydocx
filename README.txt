@@ -19,8 +19,10 @@
 
 == Using the great libraries
 
+* rubyzip
 * nokogiri
 * htmlentities
+* RMagick
 
 == License GPLv3.0
 
