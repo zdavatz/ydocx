@@ -1,3 +1,13 @@
+=== 1.0.5 / 03.05.2012
+
+* Added img support
+ - without wmf conversion
+ - create ***_files directory into same directory with html
+* Improved chapter regexp for patinfo
+* Updated command option fachinfo format as default
+* Improved regexp for patinfo
+* Added Patinfo format
+
 === 1.0.4 / 02.05.2012
 
 * Fixed bug for action to_xml in command
