@@ -1,3 +1,7 @@
+=== 1.0.9 / 04.05.2012
+
+* Added image reference option
+
 === 1.0.8 / 04.05.2012
 
 * Removed unnecessary when
