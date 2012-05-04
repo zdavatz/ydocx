@@ -63,11 +63,7 @@ module YDocx
       unless rpr.xpath('w:vertAlign').empty?
         script = rpr.xpath('w:vertAlign').first['val'].to_sym
         if script == :subscript
-          if text =~ /^[0-9]$/
-            text = "&sub" + text + ";"
-          else
-            text = markup(:sub, text)
-          end
+          text = markup(:sub, text)
         elsif script == :superscript
           if text =~ /^[0-9]$/
             text = "&sup" + text + ";"
