@@ -67,9 +67,15 @@ Usage: #{self.command} file [options]
                 end
               elsif option =~ @@help
                 self.help
+              elsif option.downcase =~ /\.(jpeg|jpg|png|gif)$/u and action == :to_html
+                # allow as default
+                # TODO
+                # refactor as normal option
+                # currently, support fachinfo/patinfo format only
+                require 'ydocx/templates/fachinfo'
+                options.merge!({:style => :frame})
               else
-                # added image reference support for fachinfo format
-                #self.error "#{self.command}: exit with #{option}: Unknown option"
+                self.error "#{self.command}: exit with #{option}: Unknown option"
               end
             else
               # default fachinfo

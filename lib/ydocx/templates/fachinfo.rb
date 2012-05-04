@@ -156,7 +156,7 @@ div#container {
     def init
       @references = []
       ARGV.reverse.each do |arg|
-        if arg =~ /\.(jpg|png|gif)$/
+        if arg.downcase =~ /\.(jpeg|jpg|png|gif)$/
           path = Pathname.new(arg).realpath
           @references << path if path.exist?
         end
