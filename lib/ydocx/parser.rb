@@ -80,9 +80,6 @@ module YDocx
       end
       text
     end
-    def parse_as_block(r, text)
-      nil # default no block element
-    end
     def optional_escape(text)
       text.force_encoding('utf-8')
       # NOTE
@@ -150,6 +147,9 @@ module YDocx
         #p "char : " + @coder.decode("&#%s;" % code.hex.to_s)
       end
     end
+    def parse_block(node)
+      nil # default no block element
+    end
     def parse_image(r)
       if pict = r.xpath('w:pict') and
          shape = pict.xpath('v:shape') and
@@ -180,26 +180,29 @@ module YDocx
     end
     def parse_paragraph(node)
       content = []
-      line_head = true
-      pos = 0
-      node.xpath('w:r').each do |r|
-        unless r.xpath('w:t').empty?
-          content << parse_text(r, (pos == 0)) # rm indent
-          pos += 1
-        else
-          unless r.xpath('w:tab').empty?
-            if content.last != @space and pos != 0 # ignore tab at line head
-              content << @space
+      if block = parse_block(node)
+        content << block
+      else # as p
+        pos = 0
+        node.xpath('w:r').each do |r|
+          unless r.xpath('w:t').empty?
+            content << parse_text(r, (pos == 0)) # rm indent
+            pos += 1
+          else
+            unless r.xpath('w:tab').empty?
+              if content.last != @space and pos != 0 # ignore tab at line head
+                content << @space
+                pos += 1
+              end
+            end
+            unless r.xpath('w:sym').empty?
+              code = r.xpath('w:sym').first['char'].downcase # w:char
+              content << optional_replace(code)
               pos += 1
             end
-          end
-          unless r.xpath('w:sym').empty?
-            code = r.xpath('w:sym').first['char'].downcase # w:char
-            content << optional_replace(code)
-            pos += 1
-          end
-          unless r.xpath('w:pict').empty?
-            content << parse_image(r)
+            unless r.xpath('w:pict').empty?
+              content << parse_image(r)
+            end
           end
         end
       end
@@ -242,27 +245,20 @@ module YDocx
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
       if rpr = r.xpath('w:rPr')
+        text = text.lstrip if lstrip
         text = apply_fonts(rpr, text)
-        if block = parse_as_block(r, text)
-          block
-        else
-          # inline tag
-          text = text.lstrip if lstrip
-          text = apply_align(rpr, text)
-          unless rpr.xpath('w:u').empty?
-            text = markup(:span, text, {:style => "text-decoration:underline;"})
-          end
-          unless rpr.xpath('w:i').empty?
-            text = markup(:em, text) 
-          end
-          unless rpr.xpath('w:b').empty?
-            text = markup(:strong, text)
-          end
-          text
+        text = apply_align(rpr, text)
+        unless rpr.xpath('w:u').empty?
+          text = markup(:span, text, {:style => "text-decoration:underline;"})
         end
-      else
-        text
+        unless rpr.xpath('w:i').empty?
+          text = markup(:em, text)
+        end
+        unless rpr.xpath('w:b').empty?
+          text = markup(:strong, text)
+        end
       end
+      text
     end
   end
 end
