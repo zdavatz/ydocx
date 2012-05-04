@@ -9,11 +9,12 @@ module YDocx
   class Builder
     include MarkupMethod
     attr_accessor :contents, :container, :indecies,
-                  :files, :style, :title
+                  :block, :files, :style, :title
     def initialize(contents)
       @contents = contents
       @container = {}
       @indecies = []
+      @block = :div
       @files = Pathname.new('.')
       @style = false
       @title = ''
@@ -59,25 +60,20 @@ module YDocx
     end
     private
     def compile(contents, mode)
-      if mode == :xml
-        block_tag = :chapter
-      else
-        block_tag = :div
-      end
       result = ''
       headings = 0
       contents.each do |element|
         if element[:tag].to_s =~ /^h[1-9]$/ # block
           if headings == 0
-            result << "<#{block_tag}>"
+            result << "<#{@block}>"
           else
-            result << "</#{block_tag}><#{block_tag}>"
+            result << "</#{@block}><#{@block}>"
           end
           headings += 1
         end
         result << build_tag(element[:tag], element[:content], element[:attributes], mode)
       end
-      result << "</#{block_tag}>"
+      result << "</#{@block}>"
     end
     def build_after_content
       nil

@@ -14,20 +14,25 @@ require 'ydocx/builder'
 module YDocx
   class Document
     attr_reader :contents, :indecies, :pictures
-    def self.open(file)
-      self.new(file)
+    def self.open(file, options={})
+      self.new(file, options)
     end
-    def initialize(file)
+    def initialize(file, options={})
       @contents = nil
       @indecies = nil
       @pictures = []
+      @options = options
       @path = nil
       @files = nil
       @zip = nil
+      init
       read(file)
+    end
+    def init
     end
     def to_html(file='', options={})
       html = ''
+      options = @options.merge(options)
       @files = @path.dirname.join(@path.basename('.docx').to_s + '_files')
       Builder.new(@contents) do |builder|
         builder.title = @path.basename
@@ -50,7 +55,9 @@ module YDocx
     end
     def to_xml(file='', options={})
       xml = ''
+      options = @options.merge(options)
       Builder.new(@contents) do |builder|
+        builder.block = options.has_key?(:block) ? options[:block] : :chapter
         xml = builder.build_xml
       end
       unless file.empty?
@@ -63,9 +70,6 @@ module YDocx
       end
     end
     private
-    def has_picture?
-      !@pictures.empty?
-    end
     def create_files
       FileUtils.mkdir @files unless @files.exist?
       @zip = Zip::ZipFile.open(@path.realpath)
@@ -74,26 +78,32 @@ module YDocx
         source_path = Pathname.new pic[:source] # id/filename.ext
         dir = @files.join source_path.dirname
         FileUtils.mkdir dir unless dir.exist?
-        binary = @zip.find_entry("word/#{origin_path}").get_input_stream
-        if source_path.extname != origin_path.extname # convert
-          if defined? Magick::Image
-            image = Magick::Image.from_blob(binary.read).first
-            image.format = source_path.extname[1..-1].upcase
-            @files.join(source_path).open('w') do |f|
-              f.puts image.to_blob
-            end
-          else # copy original image
-            @files.join(dir, origin_path.basename).open('w') do |f|
-              f.puts binary.read
-            end
-          end
-       else
+        organize_image(origin_path, source_path)
+      end
+      @zip.close
+    end
+    def organize_image(origin_path, source_path)
+      binary = @zip.find_entry("word/#{origin_path}").get_input_stream
+      if source_path.extname != origin_path.extname # convert
+        if defined? Magick::Image
+          image = Magick::Image.from_blob(binary.read).first
+          image.format = source_path.extname[1..-1].upcase
           @files.join(source_path).open('w') do |f|
+            f.puts image.to_blob
+          end
+        else # copy original image
+          @files.join(dir, origin_path.basename).open('w') do |f|
             f.puts binary.read
           end
         end
+      else
+        @files.join(source_path).open('w') do |f|
+          f.puts binary.read
+        end
       end
-      @zip.close
+    end
+    def has_picture?
+      !@pictures.empty?
     end
     def read(file)
       @path = Pathname.new file

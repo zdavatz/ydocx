@@ -147,4 +147,31 @@ div#container {
       style.gsub(/\s\s+|\n/, ' ')
     end
   end
+  # == Document
+  # Image reference option
+  # Currently, this supports only all images or first one reference.
+  # 
+  # $ docx2html example.docx --format fachinfo refence1.png refenece2.png
+  class Document
+    def init
+      @references = []
+      ARGV.reverse.each do |arg|
+        if arg =~ /\.(jpg|png|gif)$/
+          path = Pathname.new(arg).realpath
+          @references << path if path.exist?
+        end
+      end
+      @references.reverse unless @references.empty?
+    end
+    private
+    alias :copy_or_convert :organize_image
+    def organize_image(origin_path, source_path)
+      if reference = @references.shift and
+         File.extname(reference) == source_path.extname
+        FileUtils.copy reference, @files.join(source_path)
+      else
+        copy_or_convert(origin_path, source_path)
+      end
+    end
+  end
 end

@@ -68,7 +68,8 @@ Usage: #{self.command} file [options]
               elsif option =~ @@help
                 self.help
               else
-                self.error "#{self.command}: exit with #{option}: Unknown option"
+                # added image reference support for fachinfo format
+                #self.error "#{self.command}: exit with #{option}: Unknown option"
               end
             else
               # default fachinfo
