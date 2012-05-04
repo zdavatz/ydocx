@@ -74,7 +74,7 @@ module YDocx
             indices << markup(:li, link)
           end
         end
-        markup(:div, markup(:ul, indices), {:id => 'indecies'})
+        markup(:div, markup(:ol, indices), {:id => 'indecies'})
       end
     end
     def style
@@ -101,17 +101,17 @@ div#indecies {
   padding:  0px;
   margin:   0px;
   float:    left;
-  width:    200px;
+  width:    215px;
 }
-div#indecies ul {
+div#indecies ol {
   margin:  0;
-  padding: 25px 0 0 25px;
+  padding: 25px 0 0 40px;
 }
 div#container {
   position: relative;
-  padding:  5px 0 0 0;
+  padding:  5px;
   float:    top left;
-  margin:   0 0 0 200px;
+  margin:   0 0 0 215px;
 }
       CSS
       if @style == :frame
@@ -130,14 +130,14 @@ body{
 }
 div#indecies {
   position: absolute;
-  padding:  0;
+  padding:  0 0 0 5px;
   height:   100%;
   left:     0;
   top:      0;
 }
 div#container {
   position: absolute;
-  padding:  0;
+  padding:  0 20px 0 5px;
   height:   100%;
   overflow: auto;
 }
