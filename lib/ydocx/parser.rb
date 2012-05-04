@@ -244,8 +244,8 @@ module YDocx
     def parse_text(r, lstrip=false)
       text = r.xpath('w:t').map(&:text).join('')
       text = optional_escape(text)
+      text = text.lstrip if lstrip
       if rpr = r.xpath('w:rPr')
-        text = text.lstrip if lstrip
         text = apply_fonts(rpr, text)
         text = apply_align(rpr, text)
         unless rpr.xpath('w:u').empty?
