@@ -1,3 +1,11 @@
+=== 1.0.8 / 04.05.2012
+
+* Removed unnecessary when
+* Updated help massage
+* Updated white space strip at line head
+* Added version option to commands
+* Improved chapter matches for fi/pi templates
+
 === 1.0.7 / 04.05.2012
 
 * Updated chapter list style for fachinfo/patinfo
