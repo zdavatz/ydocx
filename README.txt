@@ -13,9 +13,10 @@
 
 == Usage
 
-* Usage: /usr/local/bin/docx2html file [options]
-    -f, --format    Format of style and chapter {(fi|fachinfo)|(pl|plain)}, default is FI.
+* Usage: bin/docx2html file [options]
+    -f, --format    Format of style and chapter {(fi|fachinfo)|(pi|patinfo)|(pl|plain)|none}, default fachinfo.
     -h, --help      Display this help message.
+    -v, --version   Show version.
 
 == Using the great libraries
 

@@ -4,7 +4,6 @@ README.txt
 Rakefile
 bin/docx2html
 bin/docx2xml
-lib/version.rb
 lib/ydocx.rb
 lib/ydocx/builder.rb
 lib/ydocx/document.rb
