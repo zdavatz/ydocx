@@ -19,7 +19,7 @@ module YDocx
       end
       def help
         banner = <<-BANNER
-Usage: #{$0} file [options]
+Usage: #{self.command} file [options]
   -f, --format    Format of style and chapter {(fi|fachinfo)|(pi|patinfo)|(pl|plain)|none}, default fachinfo.
   -h, --help      Display this help message.
   -v, --version   Show version.
