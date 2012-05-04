@@ -1,3 +1,8 @@
+=== 1.0.7 / 04.05.2012
+
+* Updated chapter list style for fachinfo/patinfo
+* Fixed error at parse_image
+
 === 1.0.6 / 03.05.2012
 
 * Removed RMagick dependency (as optional feature)

@@ -2,5 +2,5 @@
 # encoding: utf-8
 
 module Docx2html
-  VERSION = "1.0.6"
+  VERSION = "1.0.7"
 end
