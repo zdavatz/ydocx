@@ -153,8 +153,8 @@ module YDocx
     def parse_image(r)
       if pict = r.xpath('w:pict') and
          shape = pict.xpath('v:shape') and
-         image = shape.xpath('v:imagedata')
-          id = image.first['id'] # r:id
+         image = shape.xpath('v:imagedata').first
+        if image and id = image['id'] # r:id
           @rel.xpath('/').children.each do |element|
             element.children.each do |rel|
               if rel['Id'] == id and rel['Target']
@@ -174,6 +174,7 @@ module YDocx
               end
             end
           end
+        end
       end
       nil
     end
