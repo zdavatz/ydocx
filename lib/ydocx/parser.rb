@@ -31,8 +31,6 @@ module YDocx
           @result << parse_paragraph(node)
         when 'tbl'
           @result << parse_table(node)
-        when 'pict'
-          # pending
         when 'p'
           @result << parse_paragraph(node)
         else
