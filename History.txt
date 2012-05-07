@@ -1,3 +1,8 @@
+=== 1.1.2 / 07.05.2012
+
+* Fixed bug in xpath for multi images
+* Updated directory name for extracted images
+
 === 1.1.1 / 07.05.2012
 
 * Added "a", "pic" namespace for image parse
