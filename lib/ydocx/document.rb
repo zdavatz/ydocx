@@ -109,8 +109,8 @@ module YDocx
       @path = Pathname.new file
       @zip = Zip::ZipFile.open(@path.realpath)
       doc = @zip.find_entry('word/document.xml').get_input_stream
-      ref = @zip.find_entry('word/_rels/document.xml.rels').get_input_stream
-      Parser.new(doc, ref) do |parser|
+      rel = @zip.find_entry('word/_rels/document.xml.rels').get_input_stream
+      Parser.new(doc, rel) do |parser|
         @contents = parser.parse
         @indecies = parser.indecies
         @images = parser.images

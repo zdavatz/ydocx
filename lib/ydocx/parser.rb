@@ -18,6 +18,7 @@ module YDocx
       @result = []
       @space = '&nbsp;'
       @image_path = 'images'
+      @image_style = ''
       init
       if block_given?
         yield self
@@ -152,19 +153,35 @@ module YDocx
         'xmlns:pic' => 'http://schemas.openxmlformats.org/drawingml/2006/picture'
       }
       ns = r.namespaces.merge additional_namespaces
-      paths = {
-        :id    => 'w:pict//v:shape//v:imagedata',
-        :embed => 'w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip'
-      }.each do |attr, path|
-        if image = r.xpath(path, ns) and !image.empty?
-          (id = image.first[attr.to_s]) && break
+      [
+        {
+          :attr => 'id',
+          :path => 'w:pict//v:shape//v:imagedata',
+          :wrap => 'w:pict//v:shape//w10:wrap',
+          :type => 'type',
+        },
+        {
+          :attr => 'embed',
+          :path => 'w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip',
+          :wrap => 'w:drawing//wp:anchor//wp:wrapTight',
+          :type => 'wrapText',
+        },
+      ].each do |element|
+        if image = r.xpath(element[:path], ns) and !image.empty?
+          if wrap = r.xpath("#{element[:wrap]}", ns).first
+            # TODO
+            # wrap handling (currently all wrap off)
+            # wrap[element[:type]] has "bothSides", "topAndBottom"
+            @image_style = 'display:block;'
+          end
+          (id = image.first[element[:attr].to_s]) && break
         end
       end
       if id
-        @rel.xpath('/').children.each do |element|
-          element.children.each do |rel|
-            if rel['Id'] == id and rel['Target']
-              target = rel['Target']
+        @rel.xpath('/').children.each do |rel|
+          rel.children.each do |r|
+            if r['Id'] == id and r['Target']
+              target = r['Target']
               source = @image_path + '/'
               if defined? Magick::Image and
                  ext = File.extname(target).match(/\.wmf$/).to_a[0]
@@ -176,7 +193,9 @@ module YDocx
                 :origin => target,
                 :source => source
               }
-              return markup :img, [], {:src => source}
+              attributes = {:src => source}
+              attributes.merge!({:style => @image_style}) unless @image_style.empty?
+              return markup :img, [], attributes
             end
           end
         end
