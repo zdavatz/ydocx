@@ -145,27 +145,37 @@ module YDocx
       nil # default no block element
     end
     def parse_image(r)
-      if pict = r.xpath('w:pict') and
-         shape = pict.xpath('v:shape') and
-         image = shape.xpath('v:imagedata').first
-        if image and id = image['id'] # r:id
-          @rel.xpath('/').children.each do |element|
-            element.children.each do |rel|
-              if rel['Id'] == id and rel['Target']
-                target = rel['Target']
-                source = id.downcase + '/'
-                if defined? Magick::Image and
-                   ext = File.extname(target).match(/\.wmf$/).to_a[0]
-                  source << File.basename(target, ext) + '.png'
-                else
-                  source << File.basename(target)
-                end
-                @pictures << {
-                  :origin => target,
-                  :source => source
-                }
-                return markup :img, [], {:src => source}
+      id = nil
+      additional_namespaces = {
+        'xmlns:a'   => 'http://schemas.openxmlformats.org/drawingml/2006/main',
+        'xmlns:pic' => 'http://schemas.openxmlformats.org/drawingml/2006/picture'
+      }
+      ns = r.namespaces.merge additional_namespaces
+      paths = {
+        :id    => '//w:pict//v:shape//v:imagedata',
+        :embed => '//w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip'
+      }.each do |attr, path|
+        if image = r.xpath(path, ns) and !image.empty?
+          id = image.first[attr.to_s]
+        end
+      end
+      if id
+        @rel.xpath('/').children.each do |element|
+          element.children.each do |rel|
+            if rel['Id'] == id and rel['Target']
+              target = rel['Target']
+              source = id.downcase + '/'
+              if defined? Magick::Image and
+                 ext = File.extname(target).match(/\.wmf$/).to_a[0]
+                source << File.basename(target, ext) + '.png'
+              else
+                source << File.basename(target)
               end
+              @pictures << {
+                :origin => target,
+                :source => source
+              }
+              return markup :img, [], {:src => source}
             end
           end
         end
@@ -194,7 +204,7 @@ module YDocx
               content << optional_replace(code)
               pos += 1
             end
-            unless r.xpath('w:pict').empty?
+            if !r.xpath('w:pict').empty? or !r.xpath('w:drawing').empty?
               content << parse_image(r)
             end
           end
