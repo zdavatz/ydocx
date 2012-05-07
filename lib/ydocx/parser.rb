@@ -153,11 +153,11 @@ module YDocx
       }
       ns = r.namespaces.merge additional_namespaces
       paths = {
-        :id    => '//w:pict//v:shape//v:imagedata',
-        :embed => '//w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip'
+        :id    => 'w:pict//v:shape//v:imagedata',
+        :embed => 'w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip'
       }.each do |attr, path|
         if image = r.xpath(path, ns) and !image.empty?
-          id = image.first[attr.to_s]
+          (id = image.first[attr.to_s]) && break
         end
       end
       if id
