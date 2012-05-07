@@ -1,3 +1,7 @@
+=== 1.1.0 / 04.05.2012
+
+* Fixed bug for HTML ref of subscript
+
 === 1.0.9 / 04.05.2012
 
 * Added image reference option
