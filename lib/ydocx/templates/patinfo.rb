@@ -5,6 +5,9 @@ require 'ydocx/templates/fachinfo'
 
 module YDocx
   class Parser
+    def init
+      @image_path = 'pi_images'
+    end
     private
     def parse_block(node)
       text = node.inner_text.strip

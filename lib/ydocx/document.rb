@@ -13,14 +13,14 @@ require 'ydocx/builder'
 
 module YDocx
   class Document
-    attr_reader :contents, :indecies, :pictures
+    attr_reader :contents, :indecies, :images
     def self.open(file, options={})
       self.new(file, options)
     end
     def initialize(file, options={})
       @contents = nil
       @indecies = nil
-      @pictures = []
+      @images = []
       @options = options
       @path = nil
       @files = nil
@@ -44,7 +44,7 @@ module YDocx
         html = builder.build_html
       end
       unless file.empty?
-        create_files if has_picture?
+        create_files if has_image?
         html_file = @path.sub_ext('.html')
         File.open(html_file, 'w:utf-8') do |f|
           f.puts html
@@ -73,9 +73,9 @@ module YDocx
     def create_files
       FileUtils.mkdir @files unless @files.exist?
       @zip = Zip::ZipFile.open(@path.realpath)
-      @pictures.each do |pic|
-        origin_path = Pathname.new pic[:origin] # media/filename.ext
-        source_path = Pathname.new pic[:source] # id/filename.ext
+      @images.each do |image|
+        origin_path = Pathname.new image[:origin] # media/filename.ext
+        source_path = Pathname.new image[:source] # images/filename.ext
         dir = @files.join source_path.dirname
         FileUtils.mkdir dir unless dir.exist?
         organize_image(origin_path, source_path)
@@ -102,8 +102,8 @@ module YDocx
         end
       end
     end
-    def has_picture?
-      !@pictures.empty?
+    def has_image?
+      !@images.empty?
     end
     def read(file)
       @path = Pathname.new file
@@ -113,7 +113,7 @@ module YDocx
       Parser.new(doc, ref) do |parser|
         @contents = parser.parse
         @indecies = parser.indecies
-        @pictures = parser.pictures
+        @images = parser.images
       end
       @zip.close
     end

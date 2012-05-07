@@ -5,6 +5,9 @@ require 'cgi'
 
 module YDocx
   class Parser
+    def init
+      @image_path = 'fi_images'
+    end
     private
     def escape_id(text)
       CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)

@@ -8,15 +8,16 @@ require 'ydocx/markup_method'
 module YDocx
   class Parser
     include MarkupMethod
-    attr_accessor :indecies, :pictures, :result, :space
+    attr_accessor :indecies, :images, :result, :space
     def initialize(doc, rel)
       @doc = Nokogiri::XML.parse(doc)
       @rel = Nokogiri::XML.parse(rel)
       @coder = HTMLEntities.new
       @indecies = []
-      @pictures = []
+      @images = []
       @result = []
       @space = '&nbsp;'
+      @image_path = 'images'
       init
       if block_given?
         yield self
@@ -164,14 +165,14 @@ module YDocx
           element.children.each do |rel|
             if rel['Id'] == id and rel['Target']
               target = rel['Target']
-              source = id.downcase + '/'
+              source = @image_path + '/'
               if defined? Magick::Image and
                  ext = File.extname(target).match(/\.wmf$/).to_a[0]
                 source << File.basename(target, ext) + '.png'
               else
                 source << File.basename(target)
               end
-              @pictures << {
+              @images << {
                 :origin => target,
                 :source => source
               }
