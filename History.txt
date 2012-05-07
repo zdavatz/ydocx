@@ -1,3 +1,7 @@
+=== 1.1.1 / 07.05.2012
+
+* Added "a", "pic" namespace for image parse
+
 === 1.1.0 / 04.05.2012
 
 * Fixed bug for HTML ref of subscript
