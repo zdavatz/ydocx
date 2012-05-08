@@ -84,7 +84,8 @@ Usage: #{self.command} file [options]
             end
             doc = YDocx::Document.open(path)
             doc.send(action, path, options)
-            self.report action, doc.output_file(self.extname(action))
+            ext = self.extname(action)
+            self.report action, doc.output_file(ext[1..-1])
           end
         end
       end
