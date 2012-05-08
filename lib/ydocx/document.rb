@@ -36,7 +36,7 @@ module YDocx
       @files = @path.dirname.join(@path.basename('.docx').to_s + '_files')
       Builder.new(@contents) do |builder|
         builder.title = @path.basename
-        builder.files = @files
+        builder.files = @files.relative_path_from(@files.dirname)
         builder.style = options[:style] if options.has_key?(:style)
         if @indecies
           builder.indecies = @indecies
