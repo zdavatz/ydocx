@@ -41,7 +41,7 @@ module YDocx
       CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
     end
     def parse_code(text)
-      if text =~ /^\s*(\d\d)(&lsquo;|&rsquo;|`|')(\d\d\d)\s*\(\s*[Ss]wiss\s*medic\s*\)\s*$/
+      if text =~ /^\s*(\d\d)(&lsquo;|&rsquo;|&apos;|.|\s*)(\d\d\d)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
         @code = "%5d" % ($1 + $3)
       else
         nil
@@ -197,6 +197,12 @@ div#container {
       end
     end
     private
+    def has_image?
+      # TODO
+      # fi/pi format needs always directories.
+      # now returns just true
+      true
+    end
     alias :copy_or_convert :organize_image
     def organize_image(origin_path, source_path)
       if reference = @references.shift and
