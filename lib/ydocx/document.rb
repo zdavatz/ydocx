@@ -88,16 +88,16 @@ module YDocx
         if defined? Magick::Image
           image = Magick::Image.from_blob(binary.read).first
           image.format = source_path.extname[1..-1].upcase
-          @files.join(source_path).open('w') do |f|
+          @files.join(source_path).open('wb') do |f|
             f.puts image.to_blob
           end
         else # copy original image
-          @files.join(dir, origin_path.basename).open('w') do |f|
+          @files.join(dir, origin_path.basename).open('wb') do |f|
             f.puts binary.read
           end
         end
       else
-        @files.join(source_path).open('w') do |f|
+        @files.join(source_path).open('wb') do |f|
           f.puts binary.read
         end
       end
