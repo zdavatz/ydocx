@@ -5,13 +5,8 @@ require 'ydocx/templates/fachinfo'
 
 module YDocx
   class Parser
-    def init
-      @image_path = 'pi_images'
-    end
     private
-    def parse_block(node)
-      text = node.inner_text.strip
-      text = optional_escape text
+    def chapters
       # TODO
       # Franzoesisch
       chapters = {
@@ -31,21 +26,14 @@ module YDocx
         'Verteiler'           => /^Zulassungsinhaberin$/u, # 14
         'Hersteller'          => /^Herstellerin$/u, # 15
         'Stand d. Info.'      => /^Diese\sPackungsbeilage\s+wurde\s+im\s+[\.A-z\s0-9]+(\s+|\s*\/\s*\w+\s+\(Monat\s*\/\s*Jahr\)\s*)letztmals\s+durch\s+die\s+Arzneimittelbeh&ouml;rde\s*\(\s*Swissmedic\s*\)\s*gepr&uuml;ft.?$/u, # 16
-      }.each_pair do |chapter, regexp|
-        if text =~ regexp
-          # allow without line break
-          #next if !node.previous.inner_text.empty? and !node.next.inner_text.empty?
-          id = escape_id(chapter)
-          @indecies << {:text => chapter, :id => id}
-          return markup(:h3, text, {:id => id})
-        end
-      end
-      if node.parent.previous.nil? and @indecies.empty?
-        # The first line as package name
-        @indecies << {:text => 'Titel', :id => 'titel'}
-        return markup(:h2, text, {:id => 'titel'})
-      end
-      return nil
+      }
+    end
+  end
+  class Document
+    def init
+      @directory = 'pi'
+      @references = []
+      prepare_reference
     end
   end
 end

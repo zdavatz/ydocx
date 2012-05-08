@@ -108,8 +108,7 @@ module YDocx
         attributes.each_pair do |key, value|
           next if mode == :xml and key.to_s =~ /(id|style|colspan)/u
           if tag == :img and key == :src
-            src = @files.join value.to_s
-            _attributes << " src=\"#{src}\""
+            _attributes << " src=\"#{resolve_path(value.to_s)}\""
           else
             _attributes << " #{key.to_s}=\"#{value.to_s}\""
           end
@@ -146,6 +145,9 @@ td {
 }
       CSS
       style.gsub(/\s\s+|\n/, ' ')
+    end
+    def resolve_path(path)
+      @files.join path
     end
   end
 end

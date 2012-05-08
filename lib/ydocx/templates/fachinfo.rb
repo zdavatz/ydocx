@@ -5,16 +5,13 @@ require 'cgi'
 
 module YDocx
   class Parser
+    attr_reader :code
     def init
-      @image_path = 'fi_images'
+      @image_path = 'image'
+      @code = nil
     end
     private
-    def escape_id(text)
-      CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
-    end
-    def parse_block(node)
-      text = node.inner_text.strip
-      text = optional_escape text
+    def chapters
       # TODO
       # Franzoesisch
       chapters = {
@@ -38,13 +35,30 @@ module YDocx
         'Packungen'           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
         'Reg.Inhaber'         => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
         'Stand d. Info.'      => /^Stand\s+der\s+Information$|^Mise\s+.\s+jour$/iu, # 20
-      }.each_pair do |chapter, regexp|
+      }
+    end
+    def escape_id(text)
+      CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
+    end
+    def parse_code(text)
+      if text =~ /^\s*(\d\d)(&lsquo;|&rsquo;|`|')(\d\d\d)\s*\(\s*[Ss]wiss\s*medic\s*\)\s*$/
+        @code = "%5d" % ($1 + $3)
+      else
+        nil
+      end
+    end
+    def parse_block(node)
+      text = node.inner_text.strip
+      text = optional_escape text
+      chapters.each_pair do |chapter, regexp|
         if text =~ regexp
           # allow without line break
           # next if !node.previous.inner_text.empty? and !node.next.inner_text.empty?
           id = escape_id(chapter)
           @indecies << {:text => chapter, :id => id}
           return markup(:h3, text, {:id => id})
+        elsif parse_code(text)
+          return nil
         end
       end
       if node.parent.previous.nil? and @indecies.empty?
@@ -149,6 +163,9 @@ div#container {
       end
       style.gsub(/\s\s+|\n/, ' ')
     end
+    def resolve_path(path)
+      path
+    end
   end
   # == Document
   # Image reference option
@@ -157,14 +174,27 @@ div#container {
   # $ docx2html example.docx --format fachinfo refence1.png refenece2.png
   class Document
     def init
+      @directory = 'fi'
       @references = []
-      ARGV.reverse.each do |arg|
-        if arg.downcase =~ /\.(jpeg|jpg|png|gif)$/
-          path = Pathname.new(arg).realpath
-          @references << path if path.exist?
+      prepare_reference
+    end
+    def output_directory
+      unless @files
+        if @parser.code
+          @files = Pathname.new(@directory + '/' + @parser.code)
+        else
+          @files = @path.dirname.join(@path.basename('.docx').to_s + '_files')
         end
       end
-      @references.reverse unless @references.empty?
+      @files
+    end
+    def output_file(ext)
+      if @parser.code
+        filename = @parser.code
+        output_directory.join "#{filename}.#{ext.to_s}"
+      else # default
+        @path.sub_ext(".#{ext.to_s}")
+      end
     end
     private
     alias :copy_or_convert :organize_image
@@ -175,6 +205,15 @@ div#container {
       else
         copy_or_convert(origin_path, source_path)
       end
+    end
+    def prepare_reference
+      ARGV.reverse.each do |arg|
+        if arg.downcase =~ /\.(jpeg|jpg|png|gif)$/
+          path = Pathname.new(arg).realpath
+          @references << path if path.exist?
+        end
+      end
+      @references.reverse unless @references.empty?
     end
   end
 end

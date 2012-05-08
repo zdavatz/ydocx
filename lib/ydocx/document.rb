@@ -13,16 +13,19 @@ require 'ydocx/builder'
 
 module YDocx
   class Document
-    attr_reader :contents, :indecies, :images
+    attr_reader :builder,:contents, :images, :indecies,
+                :parser, :path
     def self.open(file, options={})
       self.new(file, options)
     end
     def initialize(file, options={})
+      @parser = nil
+      @builder = nil
       @contents = nil
       @indecies = nil
       @images = []
       @options = options
-      @path = nil
+      @path = Pathname.new('.')
       @files = nil
       @zip = nil
       init
@@ -30,13 +33,19 @@ module YDocx
     end
     def init
     end
+    def output_directory
+      @files ||= @path.dirname.join(@path.basename('.docx').to_s + '_files')
+    end
+    def output_file(ext)
+      @path.sub_ext(".#{ext.to_s}")
+    end
     def to_html(file='', options={})
       html = ''
       options = @options.merge(options)
-      @files = @path.dirname.join(@path.basename('.docx').to_s + '_files')
-      Builder.new(@contents) do |builder|
+      files = output_directory
+      @builder = Builder.new(@contents) do |builder|
         builder.title = @path.basename
-        builder.files = @files.relative_path_from(@files.dirname)
+        builder.files = files.relative_path_from(files.dirname)
         builder.style = options[:style] if options.has_key?(:style)
         if @indecies
           builder.indecies = @indecies
@@ -45,7 +54,7 @@ module YDocx
       end
       unless file.empty?
         create_files if has_image?
-        html_file = @path.sub_ext('.html')
+        html_file = output_file(:html)
         File.open(html_file, 'w:utf-8') do |f|
           f.puts html
         end
@@ -61,7 +70,8 @@ module YDocx
         xml = builder.build_xml
       end
       unless file.empty?
-        xml_file = @path.sub_ext('.xml')
+        xml_file = output_file(:xml)
+        mkdir xml_file.parent
         File.open(xml_file, 'w:utf-8') do |f|
           f.puts xml
         end
@@ -71,13 +81,14 @@ module YDocx
     end
     private
     def create_files
-      FileUtils.mkdir @files unless @files.exist?
+      files_dir = output_directory
+      mkdir Pathname.new(files_dir) unless files_dir.exist?
       @zip = Zip::ZipFile.open(@path.realpath)
       @images.each do |image|
         origin_path = Pathname.new image[:origin] # media/filename.ext
         source_path = Pathname.new image[:source] # images/filename.ext
-        dir = @files.join source_path.dirname
-        FileUtils.mkdir dir unless dir.exist?
+        image_dir = files_dir.join source_path.dirname
+        FileUtils.mkdir image_dir unless image_dir.exist?
         organize_image(origin_path, source_path)
       end
       @zip.close
@@ -88,16 +99,16 @@ module YDocx
         if defined? Magick::Image
           image = Magick::Image.from_blob(binary.read).first
           image.format = source_path.extname[1..-1].upcase
-          @files.join(source_path).open('wb') do |f|
+          output_directory.join(source_path).open('wb') do |f|
             f.puts image.to_blob
           end
         else # copy original image
-          @files.join(dir, origin_path.basename).open('wb') do |f|
+          output_directory.join(dir, origin_path.basename).open('wb') do |f|
             f.puts binary.read
           end
         end
       else
-        @files.join(source_path).open('wb') do |f|
+        output_directory.join(source_path).open('wb') do |f|
           f.puts binary.read
         end
       end
@@ -110,12 +121,18 @@ module YDocx
       @zip = Zip::ZipFile.open(@path.realpath)
       doc = @zip.find_entry('word/document.xml').get_input_stream
       rel = @zip.find_entry('word/_rels/document.xml.rels').get_input_stream
-      Parser.new(doc, rel) do |parser|
+      @parser = Parser.new(doc, rel) do |parser|
         @contents = parser.parse
         @indecies = parser.indecies
         @images = parser.images
       end
       @zip.close
+    end
+    def mkdir(path)
+      return if path.exist?
+      parent = path.parent
+      mkdir(parent)
+      FileUtils.mkdir(path)
     end
   end
 end

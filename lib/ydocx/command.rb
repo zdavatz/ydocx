@@ -14,6 +14,9 @@ module YDocx
         puts "see `#{self.command} --help`"
         exit
       end
+      def extname(action)
+        action == :to_html ? '.html': '.xml'
+      end
       def command
         File.basename $0
       end
@@ -28,10 +31,7 @@ Usage: #{self.command} file [options]
         exit
       end
       def report(action, path)
-        dir = File.dirname path
-        base = File.basename path, '.docx'
-        ext = (action == :to_xml) ? '.xml' : '.html'
-        puts "#{self.command}: generated #{dir}/#{base}#{ext}"
+        puts "#{self.command}: generated #{File.expand_path(path)}"
         exit
       end
       def run(action=:to_html)
@@ -82,8 +82,9 @@ Usage: #{self.command} file [options]
               require 'ydocx/templates/fachinfo'
               options.merge!({:style => :frame}) if action == :to_html
             end
-            YDocx::Document.open(path).send(action, path, options)
-            self.report action, path
+            doc = YDocx::Document.open(path)
+            doc.send(action, path, options)
+            self.report action, doc.output_file(self.extname(action))
           end
         end
       end
