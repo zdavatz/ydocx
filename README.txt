@@ -10,6 +10,11 @@
 * Lowercase letters, numbers
 * Umlaute
 * bold, italic, underline
+* Images 
+ ** wmf requires imagemagick and is only partially supported due to imagemagick
+ ** png files are copied 1:1
+
+* works on Windows as well.
 
 == Usage
 
