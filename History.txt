@@ -1,3 +1,7 @@
+=== 1.1.6 / 08.05.2012
+
+* Improved directory making in fachinfo format
+
 === 1.1.5 / 08.05.2012
 
 * Updated output files directory for fi/pi format
