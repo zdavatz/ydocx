@@ -1,3 +1,7 @@
+=== 1.1.5 / 08.05.2012
+
+* Updated output files directory for fi/pi format
+
 === 1.1.4 / 08.05.2012
 
 * Updated img src as relative path
