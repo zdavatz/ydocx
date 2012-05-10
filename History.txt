@@ -1,3 +1,7 @@
+=== 1.1.7 / 10.05.2012
+
+* Improved title detecting. skipped blank line.
+
 === 1.1.6 / 08.05.2012
 
 * Improved directory making in fachinfo format
