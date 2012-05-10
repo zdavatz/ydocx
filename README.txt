@@ -1,7 +1,7 @@
 == ydocx - © ywesee GmbH
 
 * https://github.com/zdavatz/ydocx
-* Parsing docx files with Ruby and output them as HTML.
+* Parsing docx files with Ruby and output them as HTML and XML.
 
 == Supports
 
@@ -10,6 +10,11 @@
 * Lowercase letters, numbers
 * Umlaute
 * bold, italic, underline
+* Images 
+ ** wmf requires imagemagick and is only partially supported due to imagemagick
+ ** png files are copied 1:1
+
+* works on Windows as well.
 
 == Usage
 
