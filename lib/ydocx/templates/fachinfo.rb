@@ -61,7 +61,7 @@ module YDocx
           return nil
         end
       end
-      if node.parent.previous.nil? and @indecies.empty?
+      if @indecies.empty? and !text.empty? and node.parent.previous.nil?
         # The first line as package name
         @indecies << {:text => 'Titel', :id => 'titel'}
         return markup(:h2, text, {:id => 'titel'})
