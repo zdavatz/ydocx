@@ -8,12 +8,13 @@ require 'ydocx/markup_method'
 module YDocx
   class Builder
     include MarkupMethod
-    attr_accessor :contents, :container, :indecies,
+    attr_accessor :contents, :container, :indecies, :references,
                   :block, :files, :style, :title
     def initialize(contents)
       @contents = contents
       @container = {}
       @indecies = []
+      @references = []
       @block = :div
       @files = Pathname.new('.')
       @style = false

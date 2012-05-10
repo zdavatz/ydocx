@@ -164,14 +164,13 @@ div#container {
       style.gsub(/\s\s+|\n/, ' ')
     end
     def resolve_path(path)
-      path
+      if reference = @references.shift
+        File.dirname(path) + '/' + reference.basename.to_s
+      else
+        path
+      end
     end
   end
-  # == Document
-  # Image reference option
-  # Currently, this supports only all images or first one reference.
-  # 
-  # $ docx2html example.docx --format fachinfo refence1.png refenece2.png
   class Document
     def init
       @directory = 'fi'
@@ -198,16 +197,21 @@ div#container {
     end
     private
     def has_image?
-      # TODO
+      # NOTE
       # fi/pi format needs always directories.
       # now returns just true
       true
     end
+    # NOTE
+    # Image reference option
+    # Currently, this supports only all images or first one reference.
+    #
+    # $ docx2html example.docx --format fachinfo refence1.png refenece2.png
     alias :copy_or_convert :organize_image
     def organize_image(origin_path, source_path)
-      if reference = @references.shift and
-         File.extname(reference) == source_path.extname
-        FileUtils.copy reference, @files.join(source_path)
+      if reference = @references.shift
+        new_source_path = source_path.dirname.to_s + '/' + File.basename(reference)
+        FileUtils.copy reference, @files.join(new_source_path)
       else
         copy_or_convert(origin_path, source_path)
       end
@@ -215,8 +219,8 @@ div#container {
     def prepare_reference
       ARGV.reverse.each do |arg|
         if arg.downcase =~ /\.(jpeg|jpg|png|gif)$/
-          path = Pathname.new(arg).realpath
-          @references << path if path.exist?
+          path = Pathname.new(arg)
+          @references << path.realpath if path.exist?
         end
       end
       @references.reverse unless @references.empty?

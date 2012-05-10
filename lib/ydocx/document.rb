@@ -22,7 +22,8 @@ module YDocx
       @parser = nil
       @builder = nil
       @contents = nil
-      @indecies = nil
+      @indecies = []
+      @references = []
       @images = []
       @options = options
       @path = Pathname.new('.')
@@ -47,9 +48,10 @@ module YDocx
         builder.title = @path.basename
         builder.files = files.relative_path_from(files.dirname)
         builder.style = options[:style] if options.has_key?(:style)
-        if @indecies
-          builder.indecies = @indecies
-        end
+        # option
+        builder.indecies = @indecies.dup
+        builder.references = @references.dup
+
         html = builder.build_html
       end
       unless file.empty?
