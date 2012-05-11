@@ -211,7 +211,9 @@ div#container {
     def organize_image(origin_path, source_path)
       if reference = @references.shift
         new_source_path = source_path.dirname.to_s + '/' + File.basename(reference)
-        FileUtils.copy reference, @files.join(new_source_path)
+        if reference != @files.join(new_source_path).realpath # same file
+          FileUtils.copy reference, @files.join(new_source_path)
+        end
       else
         copy_or_convert(origin_path, source_path)
       end
