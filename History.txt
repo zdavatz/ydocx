@@ -1,3 +1,7 @@
+=== 1.1.9 / 10.05.2012
+
+* Updating image file should not be prevented if image file already exists.
+
 === 1.1.8 / 10.05.2012
 
 * Fixed image reference option for fi/pi format
