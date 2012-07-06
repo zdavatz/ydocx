@@ -31,7 +31,7 @@ module YDocx
         'Pharm.kinetik'       => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)|^Pharmacocin.tique?/iu, # 14
         'Pr&auml;klin.'       => /^Pr&auml;klinische\s+Daten$/u, # 15
         'Sonstige H.'         => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
-        'Swissmedic-Nr.'      => /^Zulassungsnummer(:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
+        'Swissmedic-Nr.'      => /^Zulassungsnummer(n|:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
         'Packungen'           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
         'Reg.Inhaber'         => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
         'Stand d. Info.'      => /^Stand\s+der\s+Information$|^Mise\s+.\s+jour$/iu, # 20
@@ -63,7 +63,8 @@ module YDocx
           return nil
         end
       end
-      if @indecies.empty? and !text.empty? and node.parent.previous.nil?
+      if @indecies.empty? and !text.empty? and
+         (node.previous.inner_text.strip.empty? or node.parent.previous.nil?)
         # The first line as package name
         @indecies << {:text => 'Titel', :id => 'titel'}
         return markup(:h2, text, {:id => 'titel'})
