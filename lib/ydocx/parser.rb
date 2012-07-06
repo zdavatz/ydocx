@@ -154,16 +154,22 @@ module YDocx
       }
       ns = r.namespaces.merge additional_namespaces
       [
-        {
+        { # old type shape
           :attr => 'id',
           :path => 'w:pict//v:shape//v:imagedata',
           :wrap => 'w:pict//v:shape//w10:wrap',
-          :type => 'type',
+          :type => '',
         },
-        {
+        { # in anchor
           :attr => 'embed',
           :path => 'w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip',
           :wrap => 'w:drawing//wp:anchor//wp:wrapTight',
+          :type => 'wrapText',
+        },
+        { # stand alone
+          :attr => 'embed',
+          :path => 'w:drawing//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip',
+          :wrap => 'w:drawing//wp:wrapTight',
           :type => 'wrapText',
         },
       ].each do |element|
@@ -171,7 +177,7 @@ module YDocx
           if wrap = r.xpath("#{element[:wrap]}", ns).first
             # TODO
             # wrap handling (currently all wrap off)
-            # wrap[element[:type]] has "bothSides", "topAndBottom"
+            # wrap[element[:type]] has "bothSides", "topAndBottom" and "wrapText"
             @image_style = 'display:block;'
           end
           (id = image.first[element[:attr].to_s]) && break
