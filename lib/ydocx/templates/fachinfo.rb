@@ -40,9 +40,11 @@ module YDocx
     def escape_id(text)
       CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
     end
-    def parse_code(text)
-      if text =~ /^\s*(\d\d)(&lsquo;|&rsquo;|&apos;|.|\s*)(\d\d\d)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
+    def parse_code(text) # swissmedic nummer
+      if text =~ /^\s*(\d{2})(&lsquo;|&rsquo;|&apos;|.|\s*)(\d{3})\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
         @code = "%5d" % ($1 + $3)
+      elsif text =~ /^\s*(\d{5})(.*|\s*)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
+        @code = "%5d" % $1
       else
         nil
       end
@@ -180,10 +182,11 @@ div#container {
     def output_directory
       unless @files
         if @parser.code
-          @files = Pathname.new(@directory + '/' + @parser.code)
+          files = @directory + '/' + @parser.code
         else
-          @files = @path.dirname.join(@path.basename('.docx').to_s + '_files')
+          files = @path.basename('.docx').to_s + '_files'
         end
+        @files = @path.dirname.join files
       end
       @files
     end
