@@ -1,4 +1,4 @@
-== ydocx - © ywesee GmbH
+== ydocx by ywesee GmbH
 
 * https://github.com/zdavatz/ydocx
 * Parsing docx files with Ruby and output them as HTML and XML.
