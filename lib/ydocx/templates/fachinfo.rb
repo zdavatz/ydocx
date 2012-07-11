@@ -5,10 +5,11 @@ require 'cgi'
 
 module YDocx
   class Parser
-    attr_reader :code
+    attr_accessor :code, :lang
     def init
       @image_path = 'image'
       @code = nil
+      @lang = 'DE'
     end
     private
     def chapters
@@ -49,6 +50,19 @@ module YDocx
         nil
       end
     end
+    def parse_heading(text, id)
+      return markup(:h2, text, {:id => id})
+    end
+    def parse_title(node, text)
+      if @indecies.empty? and !text.empty? and
+         (node.previous.inner_text.strip.empty? or node.parent.previous.nil?)
+        # The first line as package name
+        @indecies << {:text => 'Titel', :id => 'titel'}
+        return markup(:h1, text, {:id => 'titel'})
+      else
+        return nil
+      end
+    end
     def parse_block(node)
       text = node.inner_text.strip
       text = optional_escape text
@@ -58,16 +72,13 @@ module YDocx
           # next if !node.previous.inner_text.empty? and !node.next.inner_text.empty?
           id = escape_id(chapter)
           @indecies << {:text => chapter, :id => id}
-          return markup(:h3, text, {:id => id})
+          return parse_heading(text, id)
         elsif parse_code(text)
           return nil
         end
       end
-      if @indecies.empty? and !text.empty? and
-         (node.previous.inner_text.strip.empty? or node.parent.previous.nil?)
-        # The first line as package name
-        @indecies << {:text => 'Titel', :id => 'titel'}
-        return markup(:h2, text, {:id => 'titel'})
+      if title = parse_title(node, text)
+        return title
       end
       return nil
     end
@@ -206,6 +217,8 @@ div#container {
       # now returns just true
       true
     end
+    def optional_copy(source_path)
+    end
     # NOTE
     # Image reference option
     # Currently, this supports only all images or first one reference.
@@ -221,6 +234,7 @@ div#container {
       else
         copy_or_convert(origin_path, source_path)
       end
+      optional_copy(source_path)
     end
     def prepare_reference
       ARGV.reverse.each do |arg|

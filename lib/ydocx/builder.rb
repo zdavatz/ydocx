@@ -16,6 +16,7 @@ module YDocx
       @indecies = []
       @references = []
       @block = :div
+      @block_class = nil
       @files = Pathname.new('.')
       @style = false
       @title = ''
@@ -63,18 +64,20 @@ module YDocx
     def compile(contents, mode)
       result = ''
       headings = 0
+      block_start = (@block_class ? "<#{@block} class='#{@block_class}'>" : "<#{@block}>")
+      block_close = "</#{@block}>"
       contents.each do |element|
         if element[:tag].to_s =~ /^h[1-9]$/ # block
           if headings == 0
-            result << "<#{@block}>"
+            result << block_start
           else
-            result << "</#{@block}><#{@block}>"
+            result << "#{block_close}#{block_start}"
           end
           headings += 1
         end
         result << build_tag(element[:tag], element[:content], element[:attributes], mode)
       end
-      result << "</#{@block}>"
+      result << block_close
     end
     def build_after_content
       nil

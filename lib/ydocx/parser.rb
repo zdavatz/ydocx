@@ -188,13 +188,7 @@ module YDocx
           rel.children.each do |r|
             if r['Id'] == id and r['Target']
               target = r['Target']
-              source = @image_path + '/'
-              if defined? Magick::Image and
-                 ext = File.extname(target).match(/\.wmf$/).to_a[0]
-                source << File.basename(target, ext) + '.png'
-              else
-                source << File.basename(target)
-              end
+              source = source_path(target)
               @images << {
                 :origin => target,
                 :source => source
@@ -207,6 +201,15 @@ module YDocx
         end
       end
       nil
+    end
+    def source_path(target)
+      source = @image_path + '/'
+      if defined? Magick::Image and
+         ext = File.extname(target).match(/\.wmf$/).to_a[0]
+        source << File.basename(target, ext) + '.png'
+      else
+        source << File.basename(target)
+      end
     end
     def parse_paragraph(node)
       content = []

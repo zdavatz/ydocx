@@ -40,7 +40,7 @@ module YDocx
     def output_file(ext)
       @path.sub_ext(".#{ext.to_s}")
     end
-    def to_html(file='', options={})
+    def to_html(output=false, options={})
       html = ''
       options = @options.merge(options)
       files = output_directory
@@ -54,32 +54,30 @@ module YDocx
 
         html = builder.build_html
       end
-      unless file.empty?
+      if output
         create_files if has_image?
         html_file = output_file(:html)
         File.open(html_file, 'w:utf-8') do |f|
           f.puts html
         end
-      else
-        html
       end
+      html
     end
-    def to_xml(file='', options={})
+    def to_xml(output=false, options={})
       xml = ''
       options = @options.merge(options)
       Builder.new(@contents) do |builder|
         builder.block = options.has_key?(:block) ? options[:block] : :chapter
         xml = builder.build_xml
       end
-      unless file.empty?
+      if output
         xml_file = output_file(:xml)
         mkdir xml_file.parent
         File.open(xml_file, 'w:utf-8') do |f|
           f.puts xml
         end
-      else
-        xml
       end
+      xml
     end
     private
     def create_files
