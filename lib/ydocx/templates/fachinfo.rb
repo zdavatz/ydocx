@@ -59,7 +59,7 @@ module YDocx
           "Stand d. Info."      => /^Stand\s+der\s+Information$/iu, # 20
         },
         :fr => {
-          "Nam"                    => /^Nom$/u, # 1
+          "Nom"                    => /^Nom$/u, # 1
           "Composit."              => /^Composition$/u, # 2
           "Forme gal."             => /^Forme\s+gal&eacute;nique\s+et\s+quantit&eacute;\s+de\s+principe\s+actif\s+par\s+unit&eacute;|^Forme\s*gal.nique/iu, # 3
           "Indic./emploi"          => /^Indications\s*\/\s*Possibilit&eacute;s\s+d&apos;emploi/u, # 4
