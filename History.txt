@@ -1,3 +1,9 @@
+=== 1.2.2 / 12.07.2012
+
+* Fixed typo in french
+* Updated help output
+* Updated help message about --lang option
+
 === 1.2.1 / 11.07.2012
 
 * Updated template, option handling for extension
