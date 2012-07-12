@@ -9,42 +9,92 @@ module YDocx
     def init
       @image_path = 'image'
       @code = nil
-      @lang = 'DE'
+      @lang ||= 'de'
     end
     private
+    ###
+    # Fachinfo Chapters
+    #  1. name
+    #  2. composition
+    #  3. galenic form
+    #  4. indications
+    #  5. usage
+    #  6. contra_indications
+    #  7. restrictions
+    #  8. interactions
+    #  9. pregnancy
+    # 10. driving_ability
+    # 11. unwanted_effects
+    # 12. overdose
+    # 13. effects
+    # 14. kinetic
+    # 15. preclinic
+    # 16. other_advice
+    # 17. iksnr
+    # 19. packages
+    # 19. registration_owner
+    # 20. date
     def chapters
-      # TODO
-      # Franzoesisch
       chapters = {
-        'Name'                => /^Name\s+des\s+Pr&auml;parates$/u, # 1
-        'Zusammens.'          => /^Zusammensetzung($|\s*\/\s*(Wirkstoffe|Hilsstoffe)$)/u, # 2
-        'Galen.Form'          => /^Galenische\s+Form\s*(und|\/)\s*Wirkstoffmenge\s+pro\s+Einheit$|^Forme\s*gal.nique/iu, # 3
-        'Ind./Anw.m&ouml;gl.' => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsm&ouml;glichkeiten$|^Indications/u, # 4
-        'Dos./Anw.'           => /^Dosierung\s*(\/|und)\s*Anwendung/u, # 5
-        'Kontraind.'          => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
-        'Warn.hinw.'          => /^Warnhinweise\s+und\s+Vorsichtsmassnahmen($|\s*\/\s*(relative\s+Kontraindikationen|Warnhinweise\s*und\s*Vorsichtsmassnahmen)$)/u, # 7
-        'Interakt.'           => /^Interaktionen$|^Interactions/u, # 8
-        'Schwangerschaft'     => /^Schwangerschaft(,\s*|\s*\/\s*|\s+und\s+)Stillzeit$/u, # 9
-        'Fahrt&uuml;cht.'     => /^Wirkung\s+auf\s+die\s+Fahrt&uuml;chtigkeit\s+und\s+auf\s+das\s+Bedienen\s+von\s+Maschinen$/u, # 10
-        'Unerw.Wirkungen'     => /^Unerw&uuml;nschte\s+Wirkungen$/u, # 11
-        '&Uuml;berdos.'       => /^&Uuml;berdosierung$|^Surdosage$/u, # 12
-        'Eigensch.'           => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)|^Propri.t.s/iu, # 13
-        'Pharm.kinetik'       => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)|^Pharmacocin.tique?/iu, # 14
-        'Pr&auml;klin.'       => /^Pr&auml;klinische\s+Daten$/u, # 15
-        'Sonstige H.'         => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
-        'Swissmedic-Nr.'      => /^Zulassungsnummer(n|:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
-        'Packungen'           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
-        'Reg.Inhaber'         => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
-        'Stand d. Info.'      => /^Stand\s+der\s+Information$|^Mise\s+.\s+jour$/iu, # 20
+        :de => {
+          "Name"                => /^Name\s+des\s+Pr&auml;parates$/u, # 1
+          "Zusammens."          => /^Zusammensetzung($|\s*\/\s*(Wirkstoffe|Hilsstoffe)$)/u, # 2
+          "Galen.Form"          => /^Galenische\s+Form\s*(und|\/)\s*Wirkstoffmenge\s+pro\s+Einheit$/iu, # 3
+          "Ind./Anw.m&ouml;gl." => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsm&ouml;glichkeiten$/u, # 4
+          "Dos./Anw."           => /^Dosierung\s*(\/|und)\s*Anwendung/u, # 5
+          "Kontraind."          => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
+          "Warn.hinw."          => /^Warnhinweise\s+und\s+Vorsichtsmassnahmen($|\s*\/\s*(relative\s+Kontraindikationen|Warnhinweise\s*und\s*Vorsichtsmassnahmen)$)/u, # 7
+          "Interakt."           => /^Interaktionen$/u, # 8
+          "Schwangerschaft"     => /^Schwangerschaft(,\s*|\s*\/\s*|\s+und\s+)Stillzeit$/u, # 9
+          "Fahrt&uuml;cht."     => /^Wirkung\s+auf\s+die\s+Fahrt&uuml;chtigkeit\s+und\s+auf\s+das\s+Bedienen\s+von\s+Maschinen$/u, # 10
+          "Unerw.Wirkungen"     => /^Unerw&uuml;nschte\s+Wirkungen$/u, # 11
+          "&Uuml;berdos."       => /^&Uuml;berdosierung$/u, # 12
+          "Eigensch."           => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)/iu, # 13
+          "Pharm.kinetik"       => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)/iu, # 14
+          "Pr&auml;klin."       => /^Pr&auml;klinische\s+Daten$/u, # 15
+          "Sonstige H."         => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
+          "Swissmedic-Nr."      => /^Zulassungsnummer(n|:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
+          "Packungen"           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
+          "Reg.Inhaber"         => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
+          "Stand d. Info."      => /^Stand\s+der\s+Information$/iu, # 20
+        },
+        :fr => {
+          "Nam"                    => /^Nom$/u, # 1
+          "Composit."              => /^Composition$/u, # 2
+          "Forme gal."             => /^Forme\s+gal&eacute;nique\s+et\s+quantit&eacute;\s+de\s+principe\s+actif\s+par\s+unit&eacute;|^Forme\s*gal.nique/iu, # 3
+          "Indic./emploi"          => /^Indications\s*\/\s*Possibilit&eacute;s\s+d&apos;emploi/u, # 4
+          "Posolog./mode d&apos;empl." => /^Posologie\s*\/\s*Mode\s+d&apos;emploi/u, # 5
+          "Contre-Ind."            => /^Contre\-indications$/iu, # 6
+          "Pr&eacute;cautions"     => /^Mises\s+en\s+garde\s+et\s+pr&eacute;cautions/u, # 7
+          "Interact."              => /^Interactions$/u, # 8
+          "Grossesse"              => /^Grossesse\s*\/\s*Allaitement/u, # 9
+          "Apt.conduite"           => /^Effet\s+sur\s+l&apos;aptitude\s+&agrave;\s+la\s+conduite\s+et\s+l&apos;utilisation\s+de\s+machines/u, # 10
+          "Effets ind&eacute;sir." => /^Effets\s+ind&eacute;sirables$/u, # 11
+          "Surdosage"              => /^Surdosage$/u, # 12
+          "Propri&eacute;t&eacute;s" => /^Propri&eacute;t&eacute;s\s*\/\s*Effets$/iu, # 13
+          "Pharm.cin&eacute;t."    => /^Pharmacocin&eacute;tique$/iu, # 14
+          "Donn.pr&eacute;cl."     => /^Donn&eacute;es\s+pr&eacute;cliniques$/u, # 15
+          "Remarques"              => /^Remarques\s+particuli&egrave;res$/u, # 16
+          "Estampille"             => /^Num&eacute;ro\s+d&apos;autorisation$/u, # 17
+          "Pr&eacute;sentations"   => /^Pr&eacute;sentation$/u, # 18
+          "Titulaire"              => /^Titulaire\s+de\s+l&apos;autorisation$/u, # 19
+          "Mise &agrave; jour"     => /^Mise\s+.\s+jour$|^Etat\s+de\s+l&apos;information/iu, # 20
+        }
       }
+      if @lang == 'fr'
+        chapters[:fr]
+      else
+        chapters[:de]
+      end
     end
     def escape_id(text)
-      CGI.escape(text.gsub(/&(.)uml;/, '\1e').gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
+      CGI.escape(text.
+                 gsub(/&(.)uml;/, '\1e').gsub(/&apos;/, '').gsub(/&(eacute|agrave);/, 'e').
+                 gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
     end
-    def parse_code(text) # swissmedic nummer
-      if text =~ /^\s*(\d{2})(&lsquo;|&rsquo;|&apos;|.|\s*)(\d{3})\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
-        @code = "%5d" % ($1 + $3)
-      elsif text =~ /^\s*(\d{5})(.*|\s*)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
+    def parse_code(text) # swissmedic number
+      if text.gsub(/&lsquo;|&rsquo;|&apos;|&acute;/, '') =~
+         /^\s*(\d{5})(.*|\s*)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
         @code = "%5d" % $1
       else
         nil
@@ -57,8 +107,9 @@ module YDocx
       if @indecies.empty? and !text.empty? and
          (node.previous.inner_text.strip.empty? or node.parent.previous.nil?)
         # The first line as package name
-        @indecies << {:text => 'Titel', :id => 'titel'}
-        return markup(:h1, text, {:id => 'titel'})
+        title = (@lang == 'fr' ? 'Titre' : 'Titel')
+        @indecies << {:text => title, :id => title.downcase}
+        return markup(:h1, text, {:id => title.downcase})
       else
         return nil
       end
@@ -177,11 +228,13 @@ div#container {
       end
       style.gsub(/\s\s+|\n/, ' ')
     end
-    def resolve_path(path)
+    def resolve_path(path) # image src
       if reference = @references.shift
         File.dirname(path) + '/' + reference.basename.to_s
-      else
+      elsif @files.to_s =~ /\d{5}/
         path
+      else
+        @files.join path
       end
     end
   end
@@ -202,7 +255,7 @@ div#container {
       end
       @files
     end
-    def output_file(ext)
+    def output_file(ext) # html
       if @parser.code
         filename = @parser.code
         output_directory.join "#{filename}.#{ext.to_s}"

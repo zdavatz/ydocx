@@ -122,6 +122,7 @@ module YDocx
       doc = @zip.find_entry('word/document.xml').get_input_stream
       rel = @zip.find_entry('word/_rels/document.xml.rels').get_input_stream
       @parser = Parser.new(doc, rel) do |parser|
+        parser.lang = @options[:lang] if @options[:lang]
         @contents = parser.parse
         @indecies = parser.indecies
         @images = parser.images

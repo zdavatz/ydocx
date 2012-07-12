@@ -18,9 +18,10 @@
 
 == Usage
 
-* Usage: bin/docx2html file [options]
+* Usage: docx2html file [options]
     -f, --format    Format of style and chapter {(fi|fachinfo)|(pi|patinfo)|(pl|plain)|none}, default fachinfo.
     -h, --help      Display this help message.
+    -l, --lang      Language option for templates
     -v, --version   Show version.
 
 == Using the great libraries
