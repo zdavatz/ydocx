@@ -1,4 +1,8 @@
-=== 1.2.0 / 07..2012
+=== 1.2.1 / 11.07.2012
+
+* Updated template, option handling for extension
+
+=== 1.2.0 / 07.07.2012
 
 * Added support for stand alone image parsing
 * Improved swissmedic number handling of fi format
