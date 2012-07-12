@@ -21,7 +21,7 @@
 * Usage: docx2html file [options]
     -f, --format    Format of style and chapter {(fi|fachinfo)|(pi|patinfo)|(pl|plain)|none}, default fachinfo.
     -h, --help      Display this help message.
-    -l, --lang      Language option for templates
+    -l, --lang      Language option for templates {(de|fr)}
     -v, --version   Show version.
 
 == Using the great libraries
