@@ -1,3 +1,7 @@
+=== 1.2.3 / 12.07.2012
+
+* Updated french char handling, lang in filename
+
 === 1.2.2 / 12.07.2012
 
 * Fixed typo in french
