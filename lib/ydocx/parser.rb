@@ -55,7 +55,7 @@ module YDocx
       if symbol
         _text = ''
         text.unpack('U*').each do |char|
-          _text << optional_replace(char.to_s(16))
+          _text << character_replace(char.to_s(16))
         end
         text = _text
       end
@@ -76,14 +76,14 @@ module YDocx
       end
       text
     end
-    def optional_escape(text)
+    def character_encode(text)
       text.force_encoding('utf-8')
       # NOTE
       # :named only for escape at Builder
       text = @coder.encode(text, :named)
       text
     end
-    def optional_replace(code)
+    def character_replace(code)
       code = '0x' + code
       # NOTE
       # replace with rsemble html character ref
@@ -142,6 +142,9 @@ module YDocx
         #p "hex  : " + code.hex.to_s
         #p "char : " + @coder.decode("&#%s;" % code.hex.to_s)
       end
+    end
+    def optional_escape(text)
+      text
     end
     def parse_block(node)
       nil # default no block element
@@ -230,7 +233,7 @@ module YDocx
             end
             unless r.xpath('w:sym').empty?
               code = r.xpath('w:sym').first['char'].downcase # w:char
-              content << optional_replace(code)
+              content << character_replace(code)
               pos += 1
             end
             if !r.xpath('w:pict').empty? or !r.xpath('w:drawing').empty?
@@ -276,6 +279,7 @@ module YDocx
     end
     def parse_text(r, lstrip=false)
       text = r.xpath('w:t').map(&:text).join('')
+      text = character_encode(text)
       text = optional_escape(text)
       text = text.lstrip if lstrip
       if rpr = r.xpath('w:rPr')

@@ -6,6 +6,7 @@ require 'cgi'
 module YDocx
   class Parser
     attr_accessor :code, :lang
+    @@figure_pattern = /&lsquo;|&rsquo;|&apos;|&acute;/
     def init
       @image_path = 'image'
       @code = nil
@@ -93,7 +94,7 @@ module YDocx
                  gsub(/\s*\/\s*|\s+|\/|\-/, '_').gsub(/\./, '').downcase)
     end
     def parse_code(text) # swissmedic number
-      if text.gsub(/&lsquo;|&rsquo;|&apos;|&acute;/, '') =~
+      if text.gsub(@@figure_pattern, '') =~
          /^\s*(\d{5})(.*|\s*)\s*\(\s*Swiss\s*medic\s*\)(\s*|.)$/iu
         @code = "%5d" % $1
       else
@@ -116,7 +117,7 @@ module YDocx
     end
     def parse_block(node)
       text = node.inner_text.strip
-      text = optional_escape text
+      text = character_encode(text)
       chapters.each_pair do |chapter, regexp|
         if text =~ regexp
           # allow without line break
@@ -124,13 +125,12 @@ module YDocx
           id = escape_id(chapter)
           @indecies << {:text => chapter, :id => id}
           return parse_heading(text, id)
-        elsif parse_code(text)
-          return nil
         end
       end
       if title = parse_title(node, text)
         return title
       end
+      parse_code(text)
       return nil
     end
   end
@@ -256,9 +256,10 @@ div#container {
       @files
     end
     def output_file(ext) # html
+      lang = (@parser.lang.downcase == 'fr' ? 'fr' : 'de')
       if @parser.code
         filename = @parser.code
-        output_directory.join "#{filename}.#{ext.to_s}"
+        output_directory.join "#{lang}_#{filename}.#{ext.to_s}"
       else # default
         @path.sub_ext(".#{ext.to_s}")
       end
