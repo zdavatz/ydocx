@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 require 'pathname'
-require 'zip'
+require 'zip/zip'
 begin
   require 'RMagick'
 rescue LoadError
@@ -83,7 +83,7 @@ module YDocx
     def create_files
       files_dir = output_directory
       mkdir Pathname.new(files_dir) unless files_dir.exist?
-      @zip = Zip::File.open(@path.realpath)
+      @zip = Zip::ZipFile.open(@path.realpath)
       @images.each do |image|
         origin_path = Pathname.new image[:origin] # media/filename.ext
         source_path = Pathname.new image[:source] # images/filename.ext
@@ -118,7 +118,7 @@ module YDocx
     end
     def read(file)
       @path = Pathname.new file
-      @zip = Zip::File.open(@path.realpath)
+      @zip = Zip::ZipFile.open(@path.realpath)
       doc = @zip.find_entry('word/document.xml').get_input_stream
       rel = @zip.find_entry('word/_rels/document.xml.rels').get_input_stream
       @parser = Parser.new(doc, rel) do |parser|

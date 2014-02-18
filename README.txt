@@ -26,10 +26,14 @@
 
 == Using the great libraries
 
-* rubyzip
+* rubyzip (< 1.0.0)
 * nokogiri
 * htmlentities
 * RMagick
+
+Install them using bundle install.
+
+Requires Ruby >= 1.9.2.
 
 == License GPLv3.0
 
