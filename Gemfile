@@ -7,6 +7,7 @@ gem 'rmagick'
 group :development do
 	gem 'hoe'
 	gem 'rspec'
+	gem 'simplecov'
 end
 
 group :debugger do
