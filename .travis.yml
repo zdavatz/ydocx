@@ -1,8 +1,8 @@
 language: ruby
 before_install:
   - gem install bundler
-script: "ruby -w ./test/suite.rb"
 bundler_args: --without debugger
+script: bundle exec rake spec
 rvm:
   - ruby-head
   - 2.0.0
