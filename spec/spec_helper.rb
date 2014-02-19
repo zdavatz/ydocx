@@ -10,7 +10,8 @@ require 'fileutils'
 require 'pp'
 require 'ydocx'
 
-proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-@@data_dir = File.join(proj_root, 'spec', 'data')
+module YDcoxHelper
+  DataDir = File.join(File.dirname(__FILE__), '..', 'spec', 'data')
+end
 require 'rspec'
 require 'ydocx'
