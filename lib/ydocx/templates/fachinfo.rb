@@ -105,7 +105,7 @@ module YDocx
       return markup(:h2, text, {:id => id})
     end
     def parse_title(node, text)
-      if @indecies.empty? and !text.empty? and
+      if @indecies.empty? and !text.empty? and node.previous and
          (node.previous.inner_text.strip.empty? or node.parent.previous.nil?)
         # The first line as package name
         title = (@lang == 'fr' ? 'Titre' : 'Titel')
