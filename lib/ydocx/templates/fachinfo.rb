@@ -12,7 +12,6 @@ module YDocx
       @code = nil
       @lang ||= 'de'
     end
-    private
     ###
     # Fachinfo Chapters
     #  1. name
@@ -38,56 +37,61 @@ module YDocx
     def chapters
       chapters = {
         :de => {
-          "Name"                => /^Name\s+des\s+Pr&auml;parates$/u, # 1
-          "Zusammens."          => /^Zusammensetzung($|\s*\/\s*(Wirkstoffe|Hilsstoffe)$)/u, # 2
-          "Galen.Form"          => /^Galenische\s+Form\s*(und|\/)\s*Wirkstoffmenge\s+pro\s+Einheit$/iu, # 3
-          "Ind./Anw.m&ouml;gl." => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsm&ouml;glichkeiten$/u, # 4
-          "Dos./Anw."           => /^Dosierung\s*(\/|und)\s*Anwendung/u, # 5
-          "Kontraind."          => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
-          "Warn.hinw."          => /^Warnhinweise\s+und\s+Vorsichtsmassnahmen($|\s*\/\s*(relative\s+Kontraindikationen|Warnhinweise\s*und\s*Vorsichtsmassnahmen)$)/u, # 7
-          "Interakt."           => /^Interaktionen$/u, # 8
-          "Schwangerschaft"     => /^Schwangerschaft(,\s*|\s*\/\s*|\s+und\s+)Stillzeit$/u, # 9
-          "Fahrt&uuml;cht."     => /^Wirkung\s+auf\s+die\s+Fahrt&uuml;chtigkeit\s+und\s+auf\s+das\s+Bedienen\s+von\s+Maschinen$/u, # 10
-          "Unerw.Wirkungen"     => /^Unerw&uuml;nschte\s+Wirkungen$/u, # 11
-          "&Uuml;berdos."       => /^&Uuml;berdosierung$/u, # 12
-          "Eigensch."           => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)/iu, # 13
-          "Pharm.kinetik"       => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)/iu, # 14
-          "Pr&auml;klin."       => /^Pr&auml;klinische\s+Daten$/u, # 15
-          "Sonstige H."         => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilit&auml;ten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+f&uuml;r\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
-          "Swissmedic-Nr."      => /^Zulassungsnummer(n|:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
-          "Packungen"           => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
-          "Reg.Inhaber"         => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gem&auml;ss\s*Handelsregisterauszug\s*\))/u, # 19
-          "Stand d. Info."      => /^Stand\s+der\s+Information$/iu, # 20
+          'name'                 => /^Name\s+des\s+Präparates$/u, # 1
+          'composition'          => /^Zusammensetzung|Wirkstoffe|Hilsstoffe/u, # 2
+          'galenic_form'         => /^Galenische\s+Form\s*(und|\/)\s*Wirkstoffmenge\s+pro\s+Einheit$/iu, # 3
+          'indications'          => /^Indikationen(\s+|\s*(\/|und)\s*)Anwendungsmöglichkeiten$/u, # 4
+          'usage'                => /^Dosierung\s*(\/|und)\s*Anwendung/u, # 5
+          'contra_indications'   => /^Kontraindikationen($|\s*\(\s*absolute\s+Kontraindikationen\s*\)$)/u, # 6
+          'restrictions'         => /^Warnhinweise\s+und\s+Vorsichtsmassnahmen($|\s*\/\s*(relative\s+Kontraindikationen|Warnhinweise\s*und\s*Vorsichtsmassnahmen)$)/u, # 7
+          'interactions'         => /^Interaktionen$/u, # 8
+          'pregnancy'            => /^Schwangerschaft(,\s*|\s*\/\s*|\s+und\s+)Stillzeit$/u, # 9
+          'driving_ability'      => /^Wirkung\s+auf\s+die\s+Fahrtüchtigkeit\s+und\s+auf\s+das\s+Bedienen\s+von\s+Maschinen$/u, # 10
+          'unwanted_effects'     => /^Unerwünschte\s+Wirkungen$/u, # 11
+          'overdose'             => /^Überdosierung$/u, # 12
+          'effects'              => /^Eigenschaften\s*\/\s*Wirkungen($|\s*\(\s*(ATC\-Code|Wirkungsmechanismus|Pharmakodyamik|Klinische\s+Wirksamkeit)\s*\)\s*$)/iu, # 13
+          'kinetic'              => /^Pharmakokinetik($|\s*\((Absorption,\s*Distribution,\s*Metabolisms,\s*Elimination\s|Kinetik\s+spezieller\s+Patientengruppen)*\)$)/iu, # 14
+          'preclinic'            => /^Präklinische\s+Daten$/u, # 15
+          'other_advice'         => /^Sonstige\s*Hinweise($|\s*\(\s*(Inkompatibilitäten|Beeinflussung\s*diagnostischer\s*Methoden|Haltbarkeit|Besondere\s*Lagerungshinweise|Hinweise\s+für\s+die\s+Handhabung)\s*\)$)|^Remarques/u, # 16
+          'iksnrs'               => /^Zulassungsnummer(n|:|$|\s*\(\s*Swissmedic\s*\)$)/u, # 17
+          'packages'             => /^Packungen($|\s*\(\s*mit\s+Angabe\s+der\s+Abgabekategorie\s*\)$)/u, # 18
+          'registration_owner'   => /^Zulassungsinhaberin($|\s*\(\s*Firma\s+und\s+Sitz\s+gemäss\s*Handelsregisterauszug\s*\))/u, # 19
+          'date'                 => /^Stand\s+der\s+Information$/iu, # 20
+          'fabrication'          => /^Herstellerin/u,
+          'company'              => /^Vertriebsfirma/u,
         },
         :fr => {
-          "Nom"                    => /^Nom$/u, # 1
-          "Composit."              => /^Composition$/u, # 2
-          "Forme gal."             => /^Forme\s+gal&eacute;nique\s+et\s+quantit&eacute;\s+de\s+principe\s+actif\s+par\s+unit&eacute;|^Forme\s*gal.nique/iu, # 3
-          "Indic./emploi"          => /^Indications\s*\/\s*Possibilit&eacute;s\s+d&apos;emploi/u, # 4
-          "Posolog./mode d&apos;empl." => /^Posologie\s*\/\s*Mode\s+d&apos;emploi/u, # 5
-          "Contre-Ind."            => /^Contre\-indications$/iu, # 6
-          "Pr&eacute;cautions"     => /^Mises\s+en\s+garde\s+et\s+pr&eacute;cautions/u, # 7
-          "Interact."              => /^Interactions$/u, # 8
-          "Grossesse"              => /^Grossesse\s*\/\s*Allaitement/u, # 9
-          "Apt.conduite"           => /^Effet\s+sur\s+l&apos;aptitude\s+&agrave;\s+la\s+conduite\s+et\s+l&apos;utilisation\s+de\s+machines/u, # 10
-          "Effets ind&eacute;sir." => /^Effets\s+ind&eacute;sirables$/u, # 11
-          "Surdosage"              => /^Surdosage$/u, # 12
-          "Propri&eacute;t&eacute;s" => /^Propri&eacute;t&eacute;s\s*\/\s*Effets$/iu, # 13
-          "Pharm.cin&eacute;t."    => /^Pharmacocin&eacute;tique$/iu, # 14
-          "Donn.pr&eacute;cl."     => /^Donn&eacute;es\s+pr&eacute;cliniques$/u, # 15
-          "Remarques"              => /^Remarques\s+particuli&egrave;res$/u, # 16
-          "Estampille"             => /^Num&eacute;ro\s+d&apos;autorisation$/u, # 17
-          "Pr&eacute;sentations"   => /^Pr&eacute;sentation$/u, # 18
-          "Titulaire"              => /^Titulaire\s+de\s+l&apos;autorisation$/u, # 19
-          "Mise &agrave; jour"     => /^Mise\s+.\s+jour$|^Etat\s+de\s+l&apos;information/iu, # 20
+          'name'                => /^Nom$/u, # 1
+          'composition'         => /^Composition$/u, # 2
+          'galenic_form'        => /^Forme\s+galénique\s+et\s+quantité\s+de\s+principe\s+actif\s+par\s+unité|^Forme\s*gal.nique/iu, # 3
+          'indications'         => /^Indications/u, # 4
+          'usage'               => /^Posologiei/u, # 5
+          'contra_indications'  => /^Contre\-indications/iu, # 6
+          'restrictions'        => /^Mises/u, # 7
+          'interactions'        => /^Interactions/u, # 8
+          'pregnancy'           => /^Grossesse\s*\/\s*Allaitement/u, # 9
+          'driving_ability'     => /^Effet\s+sur\s+l'aptitude\s+à;\s+la\s+conduite\s+et\s+l'utilisation\s+de\s+machines/u, # 10
+          'unwanted_effects'    => /^Effets/u, # 11
+          'overdose'            => /^Surdosage$/u, # 12
+          'effects'             => /^Propriétés/iu, # 13
+          'kinetic'             => /^Pharmacocinétique$/iu, # 14
+          'preclinic'           => /^Données\s+précliniques$/u, # 15
+          'other_advice'        => /^Remarques/u, # 16
+          'iksnrs'              => /^Numéro\s+d'autorisation$/u, # 17
+          'packages'            => /^Présentation/iu, # 18
+          'registration_owner'  => /^Titulaire\s+de\s+l'autorisation$/u, # 19
+          'date'                => /^Mise à jour/iu, # 20
+          'fabrication'         => /^Fabricant$/u,
+          'company'             => /^Distributeur/u,
         }
       }
-      if @lang == 'fr'
+      if @lang == 'fr' || @lang == :fr
         chapters[:fr]
       else
         chapters[:de]
       end
     end
+    private
     def escape_id(text)
       CGI.escape(text.
                  gsub(/&(.)uml;/, '\1e').gsub(/&apos;/, '').gsub(/&(eacute|agrave);/, 'e').

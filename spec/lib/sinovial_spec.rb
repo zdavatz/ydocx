@@ -20,6 +20,23 @@ describe "ydocx" do
     Dir.glob("#{YDcoxHelper::DataDir}/*.html").each { |file| FileUtils.rm_f(file, :verbose => $VERBOSE) }
   end
 
+  it "should convert sinovial_FR to xml" do
+    require 'ydocx/templates/fachinfo'
+    sinovial_FR = File.join(YDcoxHelper::DataDir, 'Sinovial_FR.docx')
+    File.exists?(sinovial_FR).should be true
+    doc = YDocx::Document.open(sinovial_FR, { :lang => :fr})
+    sinovial_FR_xml = sinovial_FR.sub('.docx', '.xml')
+    doc.to_xml(sinovial_FR_xml, {:format => :fachinfo})
+    out = doc.output_file('xml')    
+    File.exists?(sinovial_FR_xml).should be true
+    doc.parser.lang.to_s.should == 'fr'
+    doc = Nokogiri::XML(open(sinovial_FR_xml))
+    doc.xpath('//chapters/chapter[contains(heading, "Fabricant")]').size.should > 0
+    doc.xpath('//chapters/chapter[contains(heading, "Distributeur")]').size.should > 0
+    doc.xpath('//chapters/chapter[contains(heading, "Présentation")]').size.should > 0
+    doc.xpath('//chapters/chapter[contains(heading, "Remarques")]').text.should_not match /Présentation/
+  end
+
   it "should convert sinovial_DE to xml" do
     sinovial_DE = File.join(YDcoxHelper::DataDir, 'Sinovial_DE.docx')
     File.exists?(sinovial_DE).should be true
@@ -28,6 +45,11 @@ describe "ydocx" do
     doc.to_xml(sinovial_DE_xml, {:format => :fachinfo})
     out = doc.output_file('xml')
     File.exists?(sinovial_DE_xml).should be true
+    doc.parser.lang.to_s.should == 'de'
+    doc = Nokogiri::XML(open(sinovial_DE_xml))
+    doc.xpath('//chapters/chapter[contains(heading, "Packung")]').size.should > 0
+    doc.xpath('//chapters/chapter[contains(heading, "Hersteller")]').size.should > 0
+    doc.xpath('//chapters/chapter[contains(heading, "Vertriebsfirma")]').size.should > 0
   end
 
   it "should convert sinovial_DE to html" do
@@ -41,6 +63,7 @@ describe "ydocx" do
   end
 
   it "should convert various pseudo fachinfo to xml" do
+            require 'ydocx/templates/fachinfo'
     files = [ 'Sinovial_0.8_DE.docx', 'Sinovial_0.8_FR.docx',
               'Sinovial_DE.docx',     'Sinovial_FR.docx',
             ]
@@ -55,19 +78,7 @@ describe "ydocx" do
         out = doc.output_file('xml')
         File.exists?(file_name_xml).should be true
         doc.parser.lang.should == lang
+        doc = Nokogiri::XML(open(file_name_xml))
     }
   end
-
 end
-
-test = %(
-doc = Nokogiri::XML(open('/opt/src/ydocx/spec/data/Sinovial_DE.xml'))
- doc.xpath('//chapters/paragraph').text
- => "\n      Sinovial\n      ® \n      HighVisc\n       1,6%\n
- doc.xpath('//chapters/chapter').each{ |x| next if x.xpath('heading').size == 0; puts "\n\n"+x.xpath('heading').text; puts x.xpath('paragraph').text}
-
- doc.xpath('//chapters/chapter').each{ |x| next unless x.xpath('heading').text.match(/Packungen/); x.xpath('paragraph').each{ |p| puts p.text} }
-ean13 = [] ; doc.xpath('//chapters/chapter').each{ |x| next unless x.xpath('heading').text.match(/Packungen/); x.xpath('paragraph').each{
-	|p| m= p.text.match(/(\d{13})($|\s|\W)/); ean13 << m[1] if m } }; ean13
-
-)
