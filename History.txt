@@ -1,3 +1,7 @@
+=== 1.2.4 / 26.02.2014
+
+* Many changes by Niklaus Giger to get ready for Pseudo-Fachinformation.
+
 === 1.2.3 / 12.07.2012
 
 * Updated french char handling, lang in filename
