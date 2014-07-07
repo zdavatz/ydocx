@@ -1,3 +1,7 @@
+=== 1.2.5 / 07.07.2014
+
+* Updated to use rubyzip >= 1.0.0
+
 === 1.2.4 / 26.02.2014
 
 * Many changes by Niklaus Giger to get ready for Pseudo-Fachinformation.
