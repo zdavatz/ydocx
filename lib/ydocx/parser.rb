@@ -232,7 +232,7 @@ module YDocx
               end
             end
             unless r.xpath('w:sym').empty?
-              code = r.xpath('w:sym').first['char'].downcase # w:char
+              code = r.xpath('w:sym').first['w:char'].downcase # w:char
               content << character_replace(code)
               pos += 1
             end
