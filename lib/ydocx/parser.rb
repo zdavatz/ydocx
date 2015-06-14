@@ -158,19 +158,19 @@ module YDocx
       ns = r.namespaces.merge additional_namespaces
       [
         { # old type shape
-          :attr => 'id',
+          :attr => 'r:id',
           :path => 'w:pict//v:shape//v:imagedata',
           :wrap => 'w:pict//v:shape//w10:wrap',
           :type => '',
         },
         { # in anchor
-          :attr => 'embed',
+          :attr => 'r:embed',
           :path => 'w:drawing//wp:anchor//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip',
           :wrap => 'w:drawing//wp:anchor//wp:wrapTight',
           :type => 'wrapText',
         },
         { # stand alone
-          :attr => 'embed',
+          :attr => 'r:embed',
           :path => 'w:drawing//a:graphic//a:graphicData//pic:pic//pic:blipFill//a:blip',
           :wrap => 'w:drawing//wp:wrapTight',
           :type => 'wrapText',
