@@ -6,8 +6,8 @@ gem 'htmlentities'
 gem 'rmagick'
 
 group :development do
-	gem 'hoe'
-	gem 'rspec', '<2.9.0'
+	gem 'rspec'#, '<2.9.0'
+  gem 'rake'
 	gem 'simplecov'
 end
 

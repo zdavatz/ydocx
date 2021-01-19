@@ -4,9 +4,9 @@
 require 'pathname'
 require 'zip'
 begin
-  require 'RMagick'
+  require 'rmagick'
 rescue LoadError
-  warn "Couldn't load RMagick: .wmf conversion off"
+  warn "Couldn't load rmagick: .wmf conversion off"
 end
 require 'ydocx/parser'
 require 'ydocx/builder'

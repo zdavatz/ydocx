@@ -29,7 +29,7 @@
 * rubyzip (< 1.0.0)
 * nokogiri
 * htmlentities
-* RMagick
+* rmagick
 
 Install them using bundle install.
 

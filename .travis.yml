@@ -5,6 +5,7 @@ bundler_args: --without debugger
 script: bundle exec rake spec
 rvm:
   - ruby-head
+  - 3.0.0
   - 2.0.0
   - 1.9.3
   - 1.9.2

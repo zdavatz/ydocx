@@ -1,3 +1,8 @@
+=== 1.2.6 / 19.01.2021
+
+* Updated to use for ruby 3.0.0. RMagick->rmagic
+* Replaced hoe by bundler/gem_tasks
+
 === 1.2.5 / 07.07.2014
 
 * Updated to use rubyzip >= 1.0.0

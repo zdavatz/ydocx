@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'lib', 'ydocx')
+require_relative 'lib/ydocx/version'
 
 spec = Gem::Specification.new do |s|
    s.name        = "ydocx"
