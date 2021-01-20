@@ -2,6 +2,10 @@
 # encoding: utf-8
 require 'spec_helper'
 
+RSpec.configure do |config|
+  config.expect_with(:rspec) { |c| c.syntax = :should }
+end
+
 describe "ydocx" do
  
   before :all do
