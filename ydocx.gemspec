@@ -8,7 +8,7 @@ spec = Gem::Specification.new do |s|
    s.author      = "'Yasuhiro Asak, Zeno R.R. Davatz"
    s.email       = "yasaka@ywesee.com, zdavatz@ywesee.com"
    s.platform    = Gem::Platform::RUBY
-   s.license     = "GPLv3"
+   s.license     = "GPL-3.0"
    s.files       = Dir.glob("{bin,lib,spec}/**/*") + Dir.glob("*.txt")
    s.executables << "docx2xml"
    s.executables << "docx2html"
